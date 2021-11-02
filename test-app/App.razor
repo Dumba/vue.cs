@@ -1,1 +1,11 @@
-﻿
+﻿@inject test_app.Generated.JsManipulator _js
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var vueApp = new Master(_js);
+        await vueApp.OnInitializeAsync();
+        vueApp.Render();
+        await vueApp.AfterBodyBuild();
+    }
+}
