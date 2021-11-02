@@ -1,4 +1,4 @@
-namespace test_app.Generated
+namespace test_app.Generated.Elements
 {
     public class TextElement : IElement
     {

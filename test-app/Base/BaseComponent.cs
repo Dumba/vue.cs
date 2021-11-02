@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
-using test_app.Generated;
+using test_app.Generated.Elements;
 
-namespace test_app.Components
+namespace test_app.Base
 {
     public abstract class BaseComponent : IDisposable
     {
-        public Element Parent { get; set; }
+        public BaseComponent Parent { get; set; }
         public IElement Body { get; protected set; }
         public DotNetObjectReference<BaseComponent> ThisAsJsInterop
         {
@@ -23,18 +23,19 @@ namespace test_app.Components
         }
         private DotNetObjectReference<BaseComponent> _thisAsJsInterop;
 
-        public void Render()
+        public async Task RenderAsync(string parentId)
         {
-            Body = BuildBody();
+            await OnInitializeAsync();
+            Body = await BuildBody(parentId);
+            await AfterBodyBuildAsync();
         }
-        public abstract IElement BuildBody();
 
-        public virtual Task OnInitializeAsync()
+        protected abstract Task<IElement> BuildBody(string parentId);
+        protected virtual Task OnInitializeAsync()
         {
             return Task.CompletedTask;
         }
-
-        public virtual Task AfterBodyBuild()
+        protected virtual Task AfterBodyBuildAsync()
         {
             return Task.CompletedTask;
         }

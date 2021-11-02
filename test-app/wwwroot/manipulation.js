@@ -15,7 +15,7 @@ function SerializeEvent(event)
 {
     return {
         type: event.type,
-        target: event.target.id,
+        targetId: event.target.id,
         x: event.x,
         y: event.y,
         pageX: event.pageX,
@@ -87,8 +87,8 @@ function UpdateContent(elementId, newElement, nodeIndex = null) {
 }
 
 // events
-function AddListener(elementId, eventName, caller, methodName)
+function AddListener(elementId, eventName, caller, methodName, params)
 {
     var element = document.getElementById(elementId);
-    element[`on${eventName}`] = (ev) => caller.invokeMethod(methodName, SerializeEvent(ev));
+    element[`on${eventName}`] = (ev) => caller.invokeMethod(methodName, SerializeEvent(ev), ...params);
 }

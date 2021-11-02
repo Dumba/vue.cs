@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
-using test_app.Components;
+using test_app.Base;
+using test_app.Generated.Elements;
 
 namespace test_app.Generated
 {
@@ -33,9 +34,9 @@ namespace test_app.Generated
             _js.InvokeVoidAsync("UpdateContent", elementId, element, elementIndex);
         }
 
-        public void AddEventListener<TComponent>(string elementId, string eventName, TComponent component, string methodName) where TComponent : BaseComponent
+        public void AddEventListener(string elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
         {
-            _js.InvokeVoidAsync("AddListener", elementId, eventName, component.ThisAsJsInterop, methodName);
+            _js.InvokeVoidAsync("AddListener", elementId, eventName, component.ThisAsJsInterop, methodName, @params);
         }
     }
 }
