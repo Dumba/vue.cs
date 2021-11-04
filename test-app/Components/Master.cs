@@ -2,26 +2,37 @@ using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated;
 using test_app.Generated.Elements;
+using test_app.Generated.Reactive;
 
 namespace test_app.Components
 {
     public class Master : BaseComponent
     {
-        public Master(JsManipulator jsManipulator)
+        public Master(JsManipulator jsManipulator, DependencyManager dependencyManager)
         {
             _jsManipulator = jsManipulator;
+            _dependencyManager = dependencyManager;
+            Message = new ReactiveValue<string>(_dependencyManager, "Click?");
+            Label = new ReactiveGetter<string, string>(_dependencyManager, Message, msg => $"{msg} :-)");
         }
 
-        private JsManipulator _jsManipulator;
+        private readonly JsManipulator _jsManipulator;
+        private readonly DependencyManager _dependencyManager;
+
+        public ReactiveValue<string> Message;
+        public ReactiveGetter<string, string> Label;
 
         protected override async Task<IElement> BuildBody(string parentId)
         {
             var builder = new ElementBuilder("div")
                 .AddChild(new Menu(_jsManipulator))
                 .AddText("hello")
+                .AddChild("input", "text", ch => ch
+                    .AddAttribute("value", Label.Get())
+                    .AddEventListener("keyup", "Test", "ble", "ble"))
                 .AddChild("button", null, ch => ch
                     .AddEventListener("click", "Test", "Hello", "hal")
-                    .AddText("Click"));
+                    .AddText(Label, _dependencyManager, _jsManipulator));
             
             await builder.InsertToDomAsync(_jsManipulator, parentId, this);
 
@@ -31,7 +42,7 @@ namespace test_app.Components
         [Microsoft.JSInterop.JSInvokable]
         public void Test(Event ev, string message, string another)
         {
-            System.Console.WriteLine($"Clicked! :-) - {message} - {another}");
+            Message.Set(ev.Value);
         }
     }
 }

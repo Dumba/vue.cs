@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using test_app.Base;
+using test_app.Generated.Reactive;
 
 namespace test_app.Generated.Elements
 {
@@ -29,6 +30,13 @@ namespace test_app.Generated.Elements
         public ElementBuilder AddAttribute(string name, string value)
         {
             _element.Attributes.Add(name, value);
+
+            return this;
+        }
+        public ElementBuilder AddAttribute(string name, IReactiveProvider<string> valueProvider, DependencyManager dependencyManager, JsManipulator jsManipulator)
+        {
+            var reactiveAttribute = new ReactiveAttribute(dependencyManager, jsManipulator, _element, name, valueProvider);
+            _element.Attributes.Add(name, reactiveAttribute.Value);
 
             return this;
         }
@@ -60,6 +68,14 @@ namespace test_app.Generated.Elements
         public ElementBuilder AddText(string text)
         {
             _childBuilders.Add(new TextElementBuilder(text));
+
+            return this;
+        }
+
+        public ElementBuilder AddText(IReactiveProvider<string> textProvider, DependencyManager dependencyManager, JsManipulator jsManipulator)
+        {
+            var reactiveText = new ReactiveText(dependencyManager, jsManipulator, _element, textProvider);
+            _childBuilders.Add(new TextElementBuilder(reactiveText.Value));
 
             return this;
         }

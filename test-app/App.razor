@@ -1,9 +1,10 @@
-﻿@inject test_app.Generated.JsManipulator _js
+﻿@using Microsoft.Extensions.DependencyInjection;
+@inject System.IServiceProvider _serviceProvider;
 
 @code {
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        var vueApp = new test_app.Components.Master(_js);
-        return vueApp.RenderAsync("app");
+        var masterComponent = _serviceProvider.GetService<test_app.Components.Master>();
+        return masterComponent.RenderAsync("app");
     }
 }

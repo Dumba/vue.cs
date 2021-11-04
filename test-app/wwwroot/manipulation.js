@@ -16,6 +16,7 @@ function SerializeEvent(event)
     return {
         type: event.type,
         targetId: event.target.id,
+        value: event.target.value,
         x: event.x,
         y: event.y,
         pageX: event.pageX,
@@ -84,6 +85,16 @@ function RemoveContent(elementId, nodeIndex = null) {
 function UpdateContent(elementId, newElement, nodeIndex = null) {
     RemoveContent(elementId, nodeIndex);
     InsertContent(elementId, newElement, nodeIndex);
+}
+function ReplaceContent(elementId, oldText, newText) {
+    try {
+        var element = document.getElementById(elementId);
+
+        element.innerHTML = element.innerHTML.replace(oldText, newText);
+    }
+    catch (err) {
+        console.error(err);
+    }
 }
 
 // events

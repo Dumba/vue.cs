@@ -33,6 +33,10 @@ namespace test_app.Generated
         {
             _js.InvokeVoidAsync("UpdateContent", elementId, element, elementIndex);
         }
+        public void ReplaceContent(string elementId, string oldText, string newText)
+        {
+            _js.InvokeVoidAsync("ReplaceContent", elementId, oldText, newText);
+        }
 
         public void AddEventListener(string elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
         {
