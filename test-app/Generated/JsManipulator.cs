@@ -28,9 +28,8 @@ namespace test_app.Generated
         // nodes
         public void InsertNode(Guid parentElementId, INode node, Guid? insertBeforeNodeId = null)
         {
-            Console.WriteLine(parentElementId != Guid.Empty ? parentElementId : "app");
             // Guid.Empty = Master component
-            _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : "app", node, insertBeforeNodeId);
+            _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, insertBeforeNodeId);
         }
         public void RemoveNode(Guid nodeId)
         {

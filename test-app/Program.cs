@@ -8,10 +8,11 @@ namespace test_app
 {
     public class Program
     {
+        public static readonly string ParentSelector = "#app";
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("#app");
+            builder.RootComponents.Add<App>(ParentSelector);
 
             // builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<JsManipulator>();

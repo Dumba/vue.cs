@@ -30,7 +30,7 @@ function _createText(text, id) {
 function _getNode(id) {
     var mapping = _getMapping();
     // mapping or master component
-    var node = mapping[id] ?? document.getElementById(id);
+    var node = mapping[id] ?? document.querySelector(id);
 
     return node;
 }
