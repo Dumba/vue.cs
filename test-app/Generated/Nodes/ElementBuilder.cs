@@ -4,21 +4,21 @@ using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated.Reactive;
 
-namespace test_app.Generated.Elements
+namespace test_app.Generated.Nodes
 {
-    public class ElementBuilder : IElementBuilder
+    public class ElementBuilder : INodeBuilder
     {
-        public ElementBuilder(string tagName, string id = null)
+        public ElementBuilder(string tagName)
         {
-            _childBuilders = new List<IElementBuilder>();
+            _childBuilders = new List<INodeBuilder>();
 
-            _element = new Element(tagName, id);
+            _element = new Element(tagName);
         }
 
-        private List<IElementBuilder> _childBuilders;
+        private List<INodeBuilder> _childBuilders;
         private Element _element;
 
-        public IElement Element => _element;
+        public INode Node => _element;
 
         public ElementBuilder AddClass(string className)
         {
@@ -48,7 +48,7 @@ namespace test_app.Generated.Elements
             return this;
         }
 
-        public ElementBuilder AddChild(string tagName, string id = null, Action<ElementBuilder> setupChild = null)
+        public ElementBuilder AddChild(string tagName, Action<ElementBuilder> setupChild = null)
         {
             var childBuilder = new ElementBuilder(tagName);
             if (setupChild != null)
@@ -67,23 +67,24 @@ namespace test_app.Generated.Elements
 
         public ElementBuilder AddText(string text)
         {
-            _childBuilders.Add(new TextElementBuilder(text));
+            _childBuilders.Add(new TextNodeBuilder(text));
 
             return this;
         }
 
         public ElementBuilder AddText(IReactiveProvider<string> textProvider, DependencyManager dependencyManager, JsManipulator jsManipulator)
         {
-            var reactiveText = new ReactiveText(dependencyManager, jsManipulator, _element, textProvider);
-            _childBuilders.Add(new TextElementBuilder(reactiveText.Value));
+            var newNodeBuilder = new TextNodeBuilder(textProvider.Get());
+            var reactiveText = new ReactiveText(dependencyManager, jsManipulator, newNodeBuilder.Node, textProvider);
+            _childBuilders.Add(newNodeBuilder);
 
             return this;
         }
 
-        public async Task InsertToDomAsync(JsManipulator jsManipulator, string parentId, BaseComponent parentComponent)
+        public async Task InsertToDomAsync(JsManipulator jsManipulator, Guid parentId, BaseComponent parentComponent)
         {
             // tag with attributes
-            jsManipulator.InsertContent(parentId, Element);
+            jsManipulator.InsertNode(parentId, Node);
 
             // events
             foreach (var item in _element.EventHandlers)

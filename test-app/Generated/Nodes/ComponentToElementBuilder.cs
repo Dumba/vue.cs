@@ -1,9 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using test_app.Base;
 
-namespace test_app.Generated.Elements
+namespace test_app.Generated.Nodes
 {
-    public class ComponentToElementBuilder : IElementBuilder
+    public class ComponentToElementBuilder : INodeBuilder
     {
         public ComponentToElementBuilder(BaseComponent component)
         {
@@ -12,9 +13,9 @@ namespace test_app.Generated.Elements
 
         private BaseComponent _component;
 
-        public IElement Element => throw new System.NotImplementedException();
+        public INode Node => throw new System.NotImplementedException();
 
-        public Task InsertToDomAsync(JsManipulator jsManipulator, string parentId, BaseComponent parentComponent)
+        public Task InsertToDomAsync(JsManipulator jsManipulator, Guid parentId, BaseComponent parentComponent)
         {
             return _component.RenderAsync(parentId);
         }

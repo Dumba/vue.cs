@@ -1,7 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated;
-using test_app.Generated.Elements;
+using test_app.Generated.Nodes;
 
 namespace test_app.Components
 {
@@ -14,18 +15,18 @@ namespace test_app.Components
 
         private JsManipulator _jsManipulator;
 
-        protected override async Task<IElement> BuildBody(string parentId)
+        protected override async Task<INode> BuildBody(Guid parentId)
         {
             var builder = new ElementBuilder("menu")
                 .AddClass("main")
-                .AddChild("ul", null, ul => ul
-                    .AddChild("li", null, li => li
+                .AddChild("ul", ul => ul
+                    .AddChild("li", li => li
                         .AddText("Home")
                         .AddEventListener("click", "MoveTo", "home")));
 
             await builder.InsertToDomAsync(_jsManipulator, parentId, this);
             
-            return builder.Element;
+            return builder.Node;
         }
 
         [Microsoft.JSInterop.JSInvokable]

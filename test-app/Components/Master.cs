@@ -1,7 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated;
-using test_app.Generated.Elements;
+using test_app.Generated.Nodes;
 using test_app.Generated.Reactive;
 
 namespace test_app.Components
@@ -22,21 +23,22 @@ namespace test_app.Components
         public ReactiveValue<string> Message;
         public ReactiveGetter<string, string> Label;
 
-        protected override async Task<IElement> BuildBody(string parentId)
+        protected override async Task<INode> BuildBody(Guid parentId)
         {
             var builder = new ElementBuilder("div")
                 .AddChild(new Menu(_jsManipulator))
                 .AddText("hello")
-                .AddChild("input", "text", ch => ch
-                    .AddAttribute("value", Label.Get())
+                .AddChild("input", ch => ch
+                    .AddAttribute("value", Message.Get())
                     .AddEventListener("keyup", "Test", "ble", "ble"))
-                .AddChild("button", null, ch => ch
+                .AddChild("button", ch => ch
                     .AddEventListener("click", "Test", "Hello", "hal")
-                    .AddText(Label, _dependencyManager, _jsManipulator));
+                    .AddText(Label, _dependencyManager, _jsManipulator)
+                    .AddText("Click? :-)"));
             
             await builder.InsertToDomAsync(_jsManipulator, parentId, this);
 
-            return builder.Element;
+            return builder.Node;
         }
 
         [Microsoft.JSInterop.JSInvokable]

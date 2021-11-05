@@ -5,6 +5,6 @@
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         var masterComponent = _serviceProvider.GetService<test_app.Components.Master>();
-        return masterComponent.RenderAsync("app");
+        return masterComponent.RenderAsync(Guid.Empty);
     }
 }

@@ -1,6 +1,8 @@
+
+using System;
 using Microsoft.JSInterop;
 using test_app.Base;
-using test_app.Generated.Elements;
+using test_app.Generated.Nodes;
 
 namespace test_app.Generated
 {
@@ -13,32 +15,34 @@ namespace test_app.Generated
 
         public IJSRuntime _js;
 
-        public void SetAttribute(string elementId, string attributeName, string attributeValue)
+        // attributes
+        public void SetAttribute(Guid elementId, string attributeName, string attributeValue)
         {
             _js.InvokeVoidAsync("SetAttribute", elementId, attributeName, attributeValue);
         }
-        public void RemoveAttribute(string elementId, string attributeName)
+        public void RemoveAttribute(Guid elementId, string attributeName)
         {
             _js.InvokeVoidAsync("RemoveAttribute", elementId, attributeName);
         }
-        public void InsertContent(string elementId, IElement element, int? elementIndex = null)
+
+        // nodes
+        public void InsertNode(Guid parentElementId, INode node, Guid? insertBeforeNodeId = null)
         {
-            _js.InvokeVoidAsync("InsertContent", elementId, element, elementIndex);
+            Console.WriteLine(parentElementId != Guid.Empty ? parentElementId : "app");
+            // Guid.Empty = Master component
+            _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : "app", node, insertBeforeNodeId);
         }
-        public void RemoveContent(string elementId, int? elementIndex = null)
+        public void RemoveNode(Guid nodeId)
         {
-            _js.InvokeVoidAsync("RemoveContent", elementId, elementIndex);
+            _js.InvokeVoidAsync("RemoveNode", nodeId);
         }
-        public void UpdateContent(string elementId, IElement element, int? elementIndex = null)
+        public void UpdateText(Guid nodeId, string newText)
         {
-            _js.InvokeVoidAsync("UpdateContent", elementId, element, elementIndex);
-        }
-        public void ReplaceContent(string elementId, string oldText, string newText)
-        {
-            _js.InvokeVoidAsync("ReplaceContent", elementId, oldText, newText);
+            _js.InvokeVoidAsync("UpdateText", nodeId, newText);
         }
 
-        public void AddEventListener(string elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
+        // events
+        public void AddEventListener(Guid elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
         {
             _js.InvokeVoidAsync("AddListener", elementId, eventName, component.ThisAsJsInterop, methodName, @params);
         }

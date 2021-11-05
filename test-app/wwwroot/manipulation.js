@@ -1,7 +1,16 @@
 // private
-function CreateNode(tagName, id, attributes) {
+function _getMapping() {
+    if (!window.VueCs)
+        window.VueCs = {};
+    if (!window.VueCs.nodeMapping)
+        window.VueCs.nodeMapping = {};
+
+    return window.VueCs.nodeMapping;
+}
+function _createElement(tagName, id, attributes) {
     var element = document.createElement(tagName);
-    element.id = id;
+    var mapping = _getMapping();
+    mapping[id] = element;
 
     if (typeof(attributes) == 'object') {
         Object.keys(attributes).forEach(key => {
@@ -11,7 +20,21 @@ function CreateNode(tagName, id, attributes) {
     
     return element;
 }
-function SerializeEvent(event)
+function _createText(text, id) {
+    var element = document.createTextNode(text);
+    var mapping = _getMapping();
+    mapping[id] = element;
+
+    return element;
+}
+function _getNode(id) {
+    var mapping = _getMapping();
+    // mapping or master component
+    var node = mapping[id] ?? document.getElementById(id);
+
+    return node;
+}
+function _serializeEvent(event)
 {
     return {
         type: event.type,
@@ -27,7 +50,7 @@ function SerializeEvent(event)
 // attributes
 function SetAttribute(elementId, attributeName, attributeValue) {
     try {
-        var element = document.getElementById(elementId);
+        var element = _getNode(elementId);
         element.setAttribute(attributeName, attributeValue);
     }
     catch (err) {
@@ -36,7 +59,7 @@ function SetAttribute(elementId, attributeName, attributeValue) {
 }
 function RemoveAttribute(elementId, attributeName) {
     try {
-        var element = document.getElementById(elementId);
+        var element = _getNode(elementId);
         element.removeAttribute(attributeName);
     }
     catch (err) {
@@ -45,52 +68,39 @@ function RemoveAttribute(elementId, attributeName) {
 }
 
 // nodes
-function InsertContent(elementId, newElement, nodeIndex = null) {
+function InsertNode(parentElementId, newNode, insertBeforeNodeId = null) {
     try {
-        const element = document.getElementById(elementId);
+        const parentElement = _getNode(parentElementId);
 
-        if (nodeIndex == null) {
-            nodeIndex = element.childNodes.length;
-        }
+        const createdNode = newNode.text != null
+            ? _createText(newNode.text, newNode.id)
+            : _createElement(newNode.tagName, newNode.id, newNode.attributes);
 
-        const node = newElement.text != null
-            ? document.createTextNode(newElement.text)
-            : CreateNode(newElement.tagName, newElement.id, newElement.attributes);
-
-        if (nodeIndex >= element.childNodes.length) {
-            element.appendChild(node);
+        if (insertBeforeNodeId == null) {
+            parentElement.appendChild(createdNode);
         } else {
-            const afterElement = element.childNodes[nodeIndex];
-            element.insertBefore(node, afterElement);
+            var nextNode = _getNode(insertBeforeNodeId);
+            parentElement.insertBefore(nextNode, createdNode);
         }
     }
     catch (err) {
         console.error(err);
     }
 }
-function RemoveContent(elementId, nodeIndex = null) {
+function RemoveNode(nodeId) {
     try {
-        var element = document.getElementById(elementId);
+        var node = _getNode(nodeId);
 
-        if (nodeIndex == null) {
-            nodeIndex = element.childNodes.length - 1;
-        }
-
-        element.removeChild(element.childNodes[nodeIndex]);
+        node.parentElement.removeChild(node);
     }
     catch (err) {
         console.error(err);
     }
 }
-function UpdateContent(elementId, newElement, nodeIndex = null) {
-    RemoveContent(elementId, nodeIndex);
-    InsertContent(elementId, newElement, nodeIndex);
-}
-function ReplaceContent(elementId, oldText, newText) {
+function UpdateText(nodeId, newText) {
     try {
-        var element = document.getElementById(elementId);
-
-        element.innerHTML = element.innerHTML.replace(oldText, newText);
+        var node = _getNode(nodeId);
+        node.data = newText;
     }
     catch (err) {
         console.error(err);
@@ -98,8 +108,8 @@ function ReplaceContent(elementId, oldText, newText) {
 }
 
 // events
-function AddListener(elementId, eventName, caller, methodName, params)
+function AddListener(elementId, eventName, eventTarget, methodName, params)
 {
-    var element = document.getElementById(elementId);
-    element[`on${eventName}`] = (ev) => caller.invokeMethod(methodName, SerializeEvent(ev), ...params);
+    var element = _getNode(elementId);
+    element[`on${eventName}`] = (ev) => eventTarget.invokeMethod(methodName, _serializeEvent(ev), ...params);
 }
