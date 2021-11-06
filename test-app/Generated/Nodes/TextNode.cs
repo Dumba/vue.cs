@@ -12,5 +12,10 @@ namespace test_app.Generated.Nodes
 
         public Guid Id { get; }
         public string Text { get; set; }
+
+        public object Serialize()
+        {
+            return this;
+        }
     }
 }

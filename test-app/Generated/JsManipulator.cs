@@ -29,7 +29,7 @@ namespace test_app.Generated
         public void InsertNode(Guid parentElementId, INode node, Guid? insertBeforeNodeId = null)
         {
             // Guid.Empty = Master component
-            _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, insertBeforeNodeId);
+            _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node.Serialize(), insertBeforeNodeId);
         }
         public void RemoveNode(Guid nodeId)
         {

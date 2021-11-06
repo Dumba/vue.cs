@@ -29,6 +29,7 @@ namespace test_app.Components
                 .AddChild(new Menu(_dependencyManager, _jsManipulator))
                 .AddText("hello")
                 .AddChild("input", ch => ch
+                    .AddClass("ccc")
                     .AddAttribute("value", Message.Get())
                     .AddEventListener("keyup", "Test", "ble", "ble"))
                 .AddChild("button", ch => ch
