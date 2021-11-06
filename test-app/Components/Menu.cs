@@ -3,28 +3,26 @@ using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated;
 using test_app.Generated.Nodes;
+using test_app.Generated.Reactive;
 
 namespace test_app.Components
 {
     public class Menu : BaseComponent
     {
-        public Menu(JsManipulator jsManipulator)
+        public Menu(DependencyManager dependencyManager, JsManipulator jsManipulator) : base(dependencyManager, jsManipulator)
         {
-            _jsManipulator = jsManipulator;
         }
 
-        private JsManipulator _jsManipulator;
-
-        protected override async Task<INode> BuildBody(Guid parentId)
+        protected override async Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null)
         {
-            var builder = new ElementBuilder("menu")
+            var builder = CreateRoot(parentId, "menu")
                 .AddClass("main")
                 .AddChild("ul", ul => ul
                     .AddChild("li", li => li
                         .AddText("Home")
                         .AddEventListener("click", "MoveTo", "home")));
 
-            await builder.InsertToDomAsync(_jsManipulator, parentId, this);
+            await builder.InsertToDomAsync(insertBeforeNodeId);
             
             return builder.Node;
         }

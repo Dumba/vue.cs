@@ -12,6 +12,7 @@ namespace test_app.Generated.Nodes
 
             Classes = new List<string>();
             Attributes = new Dictionary<string, string>();
+            Styles = new Dictionary<string, string>();
             EventHandlers = new List<(string @event, string componentMethod, object[] @params)>();
         }
 
@@ -19,6 +20,7 @@ namespace test_app.Generated.Nodes
         public Guid Id { get; }
         public List<string> Classes { get; }
         public Dictionary<string, string> Attributes { get; }
+        public Dictionary<string, string> Styles { get; }
         public List<(string @event, string componentMethod, object[] @params)> EventHandlers { get; }
     }
 }

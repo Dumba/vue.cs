@@ -1,21 +1,28 @@
 using System;
 using System.Threading.Tasks;
-using test_app.Base;
 
 namespace test_app.Generated.Nodes
 {
     public class TextNodeBuilder : INodeBuilder
     {
-        public TextNodeBuilder(string text)
+        public TextNodeBuilder(JsManipulator jsManipulator, Guid parentElementId, string text)
         {
+            _jsManipulator = jsManipulator;
+            _parentElementId = parentElementId;
+
             Node = new TextNode(text);
         }
 
-        public INode Node { get; }
+        private readonly JsManipulator _jsManipulator;
+        private readonly Guid _parentElementId;
 
-        public Task InsertToDomAsync(JsManipulator jsManipulator, Guid parentId, BaseComponent parentComponent)
+        public INode Node { get; }
+        public bool IsOnPage => true;
+        public INodeBuilder NextNodeBuilder { get; set; }
+
+        public Task InsertToDomAsync(Guid? insertBeforeNodeId = null)
         {
-            jsManipulator.InsertNode(parentId, Node);
+            _jsManipulator.InsertNode(_parentElementId, Node, insertBeforeNodeId);
 
             return Task.CompletedTask;
         }

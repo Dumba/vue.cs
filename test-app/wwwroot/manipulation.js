@@ -39,7 +39,7 @@ function _serializeEvent(event)
     return {
         type: event.type,
         targetId: event.target.id,
-        value: event.target.value,
+        value: event.target.value ?? "",
         x: event.x,
         y: event.y,
         pageX: event.pageX,
@@ -51,7 +51,13 @@ function _serializeEvent(event)
 function SetAttribute(elementId, attributeName, attributeValue) {
     try {
         var element = _getNode(elementId);
-        element.setAttribute(attributeName, attributeValue);
+
+        // value sometime doesn't work with setAttribute
+        if (attributeName == "value") {
+            element.value = attributeValue;
+        } else {
+            element.setAttribute(attributeName, attributeValue);
+        }
     }
     catch (err) {
         console.error(err);
@@ -80,7 +86,7 @@ function InsertNode(parentElementId, newNode, insertBeforeNodeId = null) {
             parentElement.appendChild(createdNode);
         } else {
             var nextNode = _getNode(insertBeforeNodeId);
-            parentElement.insertBefore(nextNode, createdNode);
+            parentElement.insertBefore(createdNode, nextNode);
         }
     }
     catch (err) {

@@ -1,13 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using test_app.Base;
 
 namespace test_app.Generated.Nodes
 {
     public interface INodeBuilder
     {
         INode Node { get; }
+        bool IsOnPage { get; }
+        INodeBuilder NextNodeBuilder { get; set; }
 
-        Task InsertToDomAsync(JsManipulator jsManipulator, Guid parentId, BaseComponent parentComponent);
+        Task InsertToDomAsync(Guid? insertBeforeNodeId = null);
     }
 }
