@@ -142,7 +142,14 @@ namespace test_app.Generated.Nodes
             // insert
             if (newValue)
             {
-                return InsertToDomAsync(NextNodeBuilder.Node.Id);
+                // find next visible node
+                var nextVisibleNodeBuilder = NextNodeBuilder;
+                while (nextVisibleNodeBuilder != null && !nextVisibleNodeBuilder.IsOnPage)
+                {
+                    nextVisibleNodeBuilder = nextVisibleNodeBuilder.NextNodeBuilder;
+                }
+
+                return InsertToDomAsync(nextVisibleNodeBuilder?.Node.Id);
             }
             // remove
             else

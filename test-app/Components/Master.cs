@@ -14,12 +14,14 @@ namespace test_app.Components
             Message = new ReactiveValue<string>(_dependencyManager, "Click?");
             Label = new ReactiveGetter<string, string>(_dependencyManager, Message, msg => $"{msg} :-)");
             ShowText = new ReactiveValue<bool>(_dependencyManager);
+            Hidden = new ReactiveValue<bool>(_dependencyManager);
             ShowHideLabel = new ReactiveGetter<string, bool>(_dependencyManager, ShowText, visible => visible ? "Hide" : "Show");
         }
 
         public ReactiveValue<string> Message;
         public ReactiveGetter<string, string> Label;
         public ReactiveValue<bool> ShowText;
+        public ReactiveValue<bool> Hidden;
         public ReactiveGetter<string, bool> ShowHideLabel;
 
         protected override async Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null)
@@ -40,9 +42,15 @@ namespace test_app.Components
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "ToggleHide")
                     .AddText(ShowHideLabel))
+                .AddChild("button", ch => ch
+                    .AddEventListener("click", "ToggleHide2")
+                    .AddText("ShowHideLabel - 2"))
                 .AddChild("div", ch => ch
                     .SetCondition(ShowText)
                     .AddText("Vidíš mě?"))
+                .AddChild("div", ch => ch
+                    .SetCondition(Hidden)
+                    .AddText("next hidden"))
                 .AddChild("div", ch => ch
                     .AddText("Poslední"));
 
@@ -61,6 +69,12 @@ namespace test_app.Components
         public void ToggleHide(Event ev)
         {
             ShowText.Set(!ShowText.Get());
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void ToggleHide2(Event ev)
+        {
+            Hidden.Set(!Hidden.Get());
         }
     }
 }
