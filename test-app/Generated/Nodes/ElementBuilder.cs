@@ -78,9 +78,11 @@ namespace test_app.Generated.Nodes
             return this;
         }
 
-        public ElementBuilder AddChild(BaseComponent child)
+        public ElementBuilder AddChild(BaseComponent child, Action<ComponentToElementBuilder> setupChild = null)
         {
-            var childBuilder = new ComponentToElementBuilder(child, _element.Id);
+            var childBuilder = new ComponentToElementBuilder(_dependencyManager, _jsManipulator, child, _element.Id);
+            if (setupChild != null)
+                setupChild(childBuilder);
             _childBuilders.Add(childBuilder);
 
             return this;

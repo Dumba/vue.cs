@@ -26,7 +26,8 @@ namespace test_app.Components
         {
             var builder = CreateRoot(parentId, "div")
 #warning Tohle se mi moc nelíbí... Možná k tomu vytvořit nějakého ComponentBuildera?
-                .AddChild(new Menu(_dependencyManager, _jsManipulator))
+                .AddChild(new Menu(_dependencyManager, _jsManipulator), ch => ch
+                    .SetCondition(ShowText))
                 .AddText("hello")
                 .AddChild("input", ch => ch
                     .AddClass("ccc")
