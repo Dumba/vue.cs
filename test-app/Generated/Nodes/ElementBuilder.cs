@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated.Reactive;
+using test_app.Generated.Reactive.Data;
 
 namespace test_app.Generated.Nodes
 {
@@ -116,8 +117,7 @@ namespace test_app.Generated.Nodes
             return this;
         }
 
-        public ElementBuilder AddChildren<TCollection, TItem>(ReactiveCollection<TCollection, TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
-            where TCollection : IEnumerable<TItem>
+        public ElementBuilder AddChildren<TItem>(ReactiveList<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
         {
             foreach (var item in collection)
             {
