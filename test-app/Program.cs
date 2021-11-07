@@ -19,6 +19,8 @@ namespace test_app
             builder.Services.AddScoped<DependencyManager>();
 
             builder.Services.AddScoped<Components.Master>();
+            builder.Services.AddScoped<Components.Menu>();
+            builder.Services.AddScoped<Store.Store>();
 
             await builder.Build().RunAsync();
         }

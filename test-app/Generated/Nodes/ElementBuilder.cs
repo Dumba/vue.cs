@@ -46,7 +46,6 @@ namespace test_app.Generated.Nodes
 
             return this;
         }
-
         public ElementBuilder AddAttribute(string name, string value)
         {
             _element.Attributes.Add(name, value);
@@ -68,6 +67,22 @@ namespace test_app.Generated.Nodes
             return this;
         }
 
+        public ElementBuilder AddText(string text)
+        {
+            var childBuilder = new TextNodeBuilder(_jsManipulator, _element.Id, text);
+            _childBuilders.Add(childBuilder);
+
+            return this;
+        }
+        public ElementBuilder AddText(IReactiveProvider<string> textProvider)
+        {
+            var childBuilder = new TextNodeBuilder(_jsManipulator, _element.Id, textProvider.Get());
+            var reactiveText = new ReactiveText(_dependencyManager, _jsManipulator, childBuilder.Node, textProvider);
+            _childBuilders.Add(childBuilder);
+
+            return this;
+        }
+
         public ElementBuilder AddChild(string tagName, Action<ElementBuilder> setupChild = null)
         {
             var childBuilder = new ElementBuilder(_dependencyManager, _jsManipulator, _parentComponent, _element.Id, tagName);
@@ -77,7 +92,6 @@ namespace test_app.Generated.Nodes
 
             return this;
         }
-
         public ElementBuilder AddChild(BaseComponent child, Action<ComponentToElementBuilder> setupChild = null)
         {
             var childBuilder = new ComponentToElementBuilder(_dependencyManager, _jsManipulator, child, _element.Id);
@@ -88,19 +102,31 @@ namespace test_app.Generated.Nodes
             return this;
         }
 
-        public ElementBuilder AddText(string text)
+        public ElementBuilder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
         {
-            var childBuilder = new TextNodeBuilder(_jsManipulator, _element.Id, text);
-            _childBuilders.Add(childBuilder);
+            foreach (var item in collection)
+            {
+                var childBuilder = new ElementBuilder(_dependencyManager, _jsManipulator, _parentComponent, _element.Id, tagName);
+                if (setupChild != null)
+                    setupChild(childBuilder, item);
+
+                _childBuilders.Add(childBuilder);
+            }
 
             return this;
         }
 
-        public ElementBuilder AddText(IReactiveProvider<string> textProvider)
+        public ElementBuilder AddChildren<TCollection, TItem>(ReactiveCollection<TCollection, TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
+            where TCollection : IEnumerable<TItem>
         {
-            var childBuilder = new TextNodeBuilder(_jsManipulator, _element.Id, textProvider.Get());
-            var reactiveText = new ReactiveText(_dependencyManager, _jsManipulator, childBuilder.Node, textProvider);
-            _childBuilders.Add(childBuilder);
+            foreach (var item in collection)
+            {
+                var childBuilder = new ElementBuilder(_dependencyManager, _jsManipulator, _parentComponent, _element.Id, tagName);
+                if (setupChild != null)
+                    setupChild(childBuilder, item);
+
+                _childBuilders.Add(childBuilder);
+            }
 
             return this;
         }

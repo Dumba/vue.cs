@@ -9,47 +9,42 @@ namespace test_app.Components
 {
     public class Master : BaseComponent
     {
-        public Master(DependencyManager dependencyManager, JsManipulator jsManipulator) : base(dependencyManager, jsManipulator)
+        public Master(DependencyManager dependencyManager, JsManipulator jsManipulator, Store.Store store) : base(dependencyManager, jsManipulator)
         {
-            Message = new ReactiveValue<string>(_dependencyManager, "Click?");
-            Label = new ReactiveGetter<string, string>(_dependencyManager, Message, msg => $"{msg} :-)");
-            ShowText = new ReactiveValue<bool>(_dependencyManager);
-            Hidden = new ReactiveValue<bool>(_dependencyManager);
-            ShowHideLabel = new ReactiveGetter<string, bool>(_dependencyManager, ShowText, visible => visible ? "Hide" : "Show");
+            _store = store;
         }
 
-        public ReactiveValue<string> Message;
-        public ReactiveGetter<string, string> Label;
-        public ReactiveValue<bool> ShowText;
-        public ReactiveValue<bool> Hidden;
-        public ReactiveGetter<string, bool> ShowHideLabel;
+        private readonly Store.Store _store;
 
         protected override async Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null)
         {
             var builder = CreateRoot(parentId, "div")
 #warning Tohle se mi moc nelíbí... Možná k tomu vytvořit nějakého ComponentBuildera?
-                .AddChild(new Menu(_dependencyManager, _jsManipulator), ch => ch
-                    .SetCondition(ShowText))
+                .AddChild(new Menu(_dependencyManager, _jsManipulator, _store), ch => ch
+                    .SetCondition(_store.ShowText))
                 .AddText("hello")
                 .AddChild("input", ch => ch
                     .AddClass("ccc")
-                    .AddAttribute("value", Message.Get())
+                    .AddAttribute("value", _store.Message.Get())
                     .AddEventListener("keyup", "Test", "ble", "ble"))
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "Test", "Hello", "hal")
-                    .AddText(Label)
+                    .AddText(_store.Label)
                     .AddText("Click? :-)"))
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "ToggleHide")
-                    .AddText(ShowHideLabel))
+                    .AddText(_store.ShowHideLabel))
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "ToggleHide2")
                     .AddText("ShowHideLabel - 2"))
+                .AddChildren(_store.List, "span", (ch, i) => ch
+                    .AddText(i)
+                    .AddEventListener("click", "Remove", i))
                 .AddChild("div", ch => ch
-                    .SetCondition(ShowText)
+                    .SetCondition(_store.ShowText)
                     .AddText("Vidíš mě?"))
                 .AddChild("div", ch => ch
-                    .SetCondition(Hidden)
+                    .SetCondition(_store.Hidden)
                     .AddText("next hidden"))
                 .AddChild("div", ch => ch
                     .AddText("Poslední"));
@@ -62,19 +57,27 @@ namespace test_app.Components
         [Microsoft.JSInterop.JSInvokable]
         public void Test(Event ev, string message, string another)
         {
-            Message.Set(ev.Value);
+            _store.Message.Set(ev.Value);
         }
 
         [Microsoft.JSInterop.JSInvokable]
         public void ToggleHide(Event ev)
         {
-            ShowText.Set(!ShowText.Get());
+            _store.ShowText.Set(!_store.ShowText.Get());
         }
 
         [Microsoft.JSInterop.JSInvokable]
         public void ToggleHide2(Event ev)
         {
-            Hidden.Set(!Hidden.Get());
+            _store.Hidden.Set(!_store.Hidden.Get());
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void Remove(Event ev, string item)
+        {
+            var list = _store.List.Get();
+            list.Remove(item);
+            _store.List.Set(list);
         }
     }
 }

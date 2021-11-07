@@ -9,9 +9,12 @@ namespace test_app.Components
 {
     public class Menu : BaseComponent
     {
-        public Menu(DependencyManager dependencyManager, JsManipulator jsManipulator) : base(dependencyManager, jsManipulator)
+        public Menu(DependencyManager dependencyManager, JsManipulator jsManipulator, Store.Store store) : base(dependencyManager, jsManipulator)
         {
+            _store = store;
         }
+
+        private readonly Store.Store _store;
 
         protected override async Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null)
         {
@@ -20,7 +23,10 @@ namespace test_app.Components
                 .AddChild("ul", ul => ul
                     .AddChild("li", li => li
                         .AddText("Home")
-                        .AddEventListener("click", "MoveTo", "home")));
+                        .AddEventListener("click", "MoveTo", "home")))
+                .AddChild("span", ch => ch
+                    .AddText("Hidden Menu")
+                    .SetCondition(_store.Hidden));
 
             await builder.InsertToDomAsync(insertBeforeNodeId);
             
