@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace test_app.Generated.Reactive
+namespace test_app.Generated.Reactive.Data
 {
     public class ReactiveGetter<TValue, TSourceValue> : IReactiveConsumer<TSourceValue>, IReactiveProvider<TValue>
     {

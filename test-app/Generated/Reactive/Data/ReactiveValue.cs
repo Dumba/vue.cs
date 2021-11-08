@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace test_app.Generated.Reactive
+namespace test_app.Generated.Reactive.Data
 {
     public class ReactiveValue<TValue> : IReactiveProvider<TValue>
     {
