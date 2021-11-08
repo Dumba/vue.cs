@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using test_app.Base;
 
 namespace test_app.Generated.Nodes
 {
@@ -16,6 +18,13 @@ namespace test_app.Generated.Nodes
         public object Serialize()
         {
             return this;
+        }
+        
+        public Task RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null)
+        {
+            jsManipulator.InsertNode(parentElementId, this, insertBeforeNodeId);
+
+            return Task.CompletedTask;
         }
     }
 }

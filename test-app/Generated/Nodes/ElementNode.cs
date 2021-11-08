@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using test_app.Base;
 
 namespace test_app.Generated.Nodes
 {
-    public class Element : INode
+    public class ElementNode : INode
     {
-        public Element(string tagName)
+        public ElementNode(string tagName)
         {
             TagName = tagName;
             Id = Guid.NewGuid();
@@ -38,6 +40,21 @@ namespace test_app.Generated.Nodes
                 Attributes = allAttributes,
                 EventHandlers,
             };
+        }
+
+        
+        public Task RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null)
+        {
+            // tag with attributes
+            jsManipulator.InsertNode(parentElementId, this, insertBeforeNodeId);
+
+            // events
+            foreach (var eventHandler in EventHandlers)
+            {
+                jsManipulator.AddEventListener(Id, parentComponent, eventHandler.@event, eventHandler.componentMethod, eventHandler.@params);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

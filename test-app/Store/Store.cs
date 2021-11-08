@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using test_app.Generated.Reactive;
+using test_app.Generated.Reactive.Data;
 
 namespace test_app.Store
 {
@@ -12,7 +13,7 @@ namespace test_app.Store
             ShowText = new ReactiveValue<bool>(dependencyManager);
             Hidden = new ReactiveValue<bool>(dependencyManager);
             ShowHideLabel = new ReactiveGetter<string, bool>(dependencyManager, ShowText, visible => visible ? "Hide" : "Show");
-            List = new ReactiveCollection<List<string>, string>(dependencyManager, new List<string> { "A", "B", "C" });
+            List = new ReactiveList<string>(dependencyManager, new List<string> { "A", "B", "C" });
         }
 
         public ReactiveValue<string> Message { get; }
@@ -20,6 +21,6 @@ namespace test_app.Store
         public ReactiveValue<bool> ShowText { get; }
         public ReactiveValue<bool> Hidden { get; }
         public ReactiveGetter<string, bool> ShowHideLabel { get; }
-        public ReactiveCollection<List<string>, string> List { get; }
+        public ReactiveList<string> List { get; }
     }
 }

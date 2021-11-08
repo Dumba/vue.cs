@@ -5,22 +5,20 @@ namespace test_app.Generated.Reactive
 {
     public class ReactiveAttribute : IReactiveConsumer<string>
     {
-        public ReactiveAttribute(DependencyManager dependencyManager, JsManipulator jsManipulator, Element element, string name, IReactiveProvider<string> valueProvider)
+        public ReactiveAttribute(DependencyManager dependencyManager, JsManipulator jsManipulator, ElementNode element, string name, IReactiveProvider<string> valueProvider)
         {
-            _dependencyManager = dependencyManager;
             _jsManipulator = jsManipulator;
 
             Element = element;
             Name = name;
             ValueProvider = valueProvider;
 
-            _dependencyManager.RegisterDependency(this, valueProvider);
+            dependencyManager.RegisterDependency(this, valueProvider);
         }
 
-        private readonly DependencyManager _dependencyManager;
         private readonly JsManipulator _jsManipulator;
         
-        public Element Element { get; }
+        public ElementNode Element { get; }
         public string Name { get; }
         public string Value => ValueProvider.Get();
         public IReactiveProvider<string> ValueProvider { get; private set; }

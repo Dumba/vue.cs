@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated;
 using test_app.Generated.Nodes;
@@ -16,9 +15,9 @@ namespace test_app.Components
 
         private readonly Store.Store _store;
 
-        protected override async Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null)
+        protected override ElementBuilder _buildNodes(Guid parentElementId)
         {
-            var builder = CreateRoot(parentId, "div")
+            var builder = CreateRoot(parentElementId, "div")
 #warning Tohle se mi moc nelíbí... Možná k tomu vytvořit nějakého ComponentBuildera?
                 .AddChild(new Menu(_dependencyManager, _jsManipulator, _store), ch => ch
                     .SetCondition(_store.ShowText))
@@ -37,9 +36,9 @@ namespace test_app.Components
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "ToggleHide2")
                     .AddText("ShowHideLabel - 2"))
-                .AddChildren(_store.List, "span", (ch, i) => ch
-                    .AddText(i)
-                    .AddEventListener("click", "Remove", i))
+                // .AddChildren(_store.List, "span", (ch, i) => ch
+                //     .AddText(i)
+                //     .AddEventListener("click", "Remove", i))
                 .AddChild("div", ch => ch
                     .SetCondition(_store.ShowText)
                     .AddText("Vidíš mě?"))
@@ -49,9 +48,7 @@ namespace test_app.Components
                 .AddChild("div", ch => ch
                     .AddText("Poslední"));
 
-            await builder.InsertToDomAsync(insertBeforeNodeId);
-
-            return builder.Node;
+            return builder;
         }
 
         [Microsoft.JSInterop.JSInvokable]
@@ -75,9 +72,7 @@ namespace test_app.Components
         [Microsoft.JSInterop.JSInvokable]
         public void Remove(Event ev, string item)
         {
-            var list = _store.List.Get();
-            list.Remove(item);
-            _store.List.Set(list);
+            _store.List.Remove(item);
         }
     }
 }

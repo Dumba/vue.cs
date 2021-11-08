@@ -7,16 +7,14 @@ namespace test_app.Generated.Reactive
     {
         public ReactiveText(DependencyManager dependencyManager, JsManipulator jsManipulator, INode node, IReactiveProvider<string> valueProvider)
         {
-            _dependencyManager = dependencyManager;
             _jsManipulator = jsManipulator;
 
             Node = node;
             ValueProvider = valueProvider;
 
-            _dependencyManager.RegisterDependency(this, valueProvider);
+            dependencyManager.RegisterDependency(this, valueProvider);
         }
 
-        private readonly DependencyManager _dependencyManager;
         private readonly JsManipulator _jsManipulator;
         
         public INode Node { get; }

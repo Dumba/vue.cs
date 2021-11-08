@@ -18,8 +18,6 @@ namespace test_app.Base
         protected readonly DependencyManager _dependencyManager;
         protected readonly JsManipulator _jsManipulator;
 
-        public BaseComponent Parent { get; set; }
-        public INode Body { get; protected set; }
         public DotNetObjectReference<BaseComponent> ThisAsJsInterop
         {
             get
@@ -34,25 +32,40 @@ namespace test_app.Base
         }
         private DotNetObjectReference<BaseComponent> _thisAsJsInterop;
 
-        public async Task RenderAsync(Guid parentId, Guid? insertBeforeNodeId = null)
-        {
-            await OnInitializeAsync();
-            Body = await BuildBody(parentId, insertBeforeNodeId);
-            await AfterBodyBuildAsync();
-        }
-        protected abstract Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null);
-        protected virtual Task OnInitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-        protected virtual Task AfterBodyBuildAsync()
-        {
-            return Task.CompletedTask;
-        }
-
         protected ElementBuilder CreateRoot(Guid parentElementId, string tagName)
         {
             return new ElementBuilder(_dependencyManager, _jsManipulator, this, parentElementId, tagName);
+        }
+
+        public Task RenderAsync(Guid parentElementId, bool init)
+        {
+            var node = BuildNodes(parentElementId);
+            return OnlyRenderAsync(node, init);
+        }
+        public INodePositioned BuildNodes(Guid parentElementId)
+        {
+            OnInitialize();
+            return _buildNodes(parentElementId).Build();
+        }
+        public async Task OnlyRenderAsync(INodePositioned node, bool init)
+        {
+            await AfterBuildNodesAsync();
+            await node.RenderAsync(_jsManipulator, init);
+            await AfterRenderAsync();
+        }
+
+        protected abstract INodeBuilder _buildNodes(Guid parentElementId);
+        
+        public virtual void OnInitialize()
+        {
+        }
+        public virtual Task AfterBuildNodesAsync()
+        {
+            return Task.CompletedTask;
+        }
+        public virtual Task AfterRenderAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public void Dispose()

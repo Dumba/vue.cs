@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using test_app.Base;
 using test_app.Generated;
 using test_app.Generated.Nodes;
@@ -16,9 +15,9 @@ namespace test_app.Components
 
         private readonly Store.Store _store;
 
-        protected override async Task<INode> BuildBody(Guid parentId, Guid? insertBeforeNodeId = null)
+        protected override INodeBuilder _buildNodes(Guid parentElementId)
         {
-            var builder = CreateRoot(parentId, "menu")
+            var builder = CreateRoot(parentElementId, "menu")
                 .AddClass("main")
                 .AddChild("ul", ul => ul
                     .AddChild("li", li => li
@@ -28,9 +27,7 @@ namespace test_app.Components
                     .AddText("Hidden Menu")
                     .SetCondition(_store.Hidden));
 
-            await builder.InsertToDomAsync(insertBeforeNodeId);
-            
-            return builder.Node;
+            return builder;
         }
 
         [Microsoft.JSInterop.JSInvokable]
