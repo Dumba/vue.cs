@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
 using test_app.Generated.Reactive;
 using test_app.Generated.Reactive.Visual;
@@ -8,10 +9,9 @@ namespace test_app.Generated.Nodes
 {
     public class ElementBuilder : INodeBuilder
     {
-        public ElementBuilder(DependencyManager dependencyManager, JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, string tagName)
+        public ElementBuilder(IServiceProvider serviceProvider, BaseComponent parentComponent, Guid parentElementId, string tagName)
         {
-            _dependencyManager = dependencyManager;
-            _jsManipulator = jsManipulator;
+            _serviceProvider = serviceProvider;
 
             _element = new ElementNode(tagName);
             _parentComponent = parentComponent;
@@ -19,8 +19,7 @@ namespace test_app.Generated.Nodes
             Node = new NodePositioned(_element, parentComponent, parentElementId);
         }
 
-        private readonly DependencyManager _dependencyManager;
-        private readonly JsManipulator _jsManipulator;
+        private readonly IServiceProvider _serviceProvider;
 
         private ElementNode _element;
         private BaseComponent _parentComponent;
@@ -42,7 +41,7 @@ namespace test_app.Generated.Nodes
         }
         public ElementBuilder AddAttribute(string name, IReactiveProvider<string> valueProvider)
         {
-            var reactiveAttribute = new ReactiveAttribute(_dependencyManager, _jsManipulator, _element, name, valueProvider);
+            var reactiveAttribute = _serviceProvider.GetService<ReactiveAttribute.Builder>().Build(_element, name, valueProvider);
             _element.Attributes.Add(name, reactiveAttribute.Value);
 
             return this;
@@ -72,7 +71,7 @@ namespace test_app.Generated.Nodes
         public ElementBuilder AddText(IReactiveProvider<string> textProvider)
         {
             var child = new NodePositioned(new TextNode(textProvider.Get()), _parentComponent, _element.Id);
-            var reactiveText = new ReactiveText(_dependencyManager, _jsManipulator, child.Node, textProvider);
+            var reactiveText = _serviceProvider.GetService<ReactiveText.Builder>().Build(child.Node, textProvider);
 
             _addChild(child);
 
@@ -81,7 +80,7 @@ namespace test_app.Generated.Nodes
 
         public ElementBuilder AddChild(string tagName, Action<ElementBuilder> setupChild = null)
         {
-            var childBuilder = new ElementBuilder(_dependencyManager, _jsManipulator, _parentComponent, _element.Id, tagName);
+            var childBuilder = new ElementBuilder(_serviceProvider, _parentComponent, _element.Id, tagName);
             if (setupChild != null)
                 setupChild(childBuilder);
 
@@ -89,9 +88,10 @@ namespace test_app.Generated.Nodes
 
             return this;
         }
-        public ElementBuilder AddChild(BaseComponent child, Action<ComponentBuilder> setupChild = null)
+        public ElementBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
+            where TComponent : BaseComponent
         {
-            var childBuilder = new ComponentBuilder(_dependencyManager, _jsManipulator, child, _element.Id);
+            var childBuilder = new ComponentBuilder<TComponent>(_serviceProvider, _element.Id);
             if (setupChild != null)
                 setupChild(childBuilder);
 
@@ -143,7 +143,7 @@ namespace test_app.Generated.Nodes
         {
             if (_condition != null)
             {
-                Node = new ReactiveNode(_dependencyManager, Node, _condition);
+                Node = _serviceProvider.GetService<ReactiveNode.Builder>().Build(Node, _condition);
             }
 
             return Node;

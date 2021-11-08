@@ -1,14 +1,12 @@
 using System;
 using test_app.Base;
-using test_app.Generated;
 using test_app.Generated.Nodes;
-using test_app.Generated.Reactive;
 
 namespace test_app.Components
 {
     public class Master : BaseComponent
     {
-        public Master(DependencyManager dependencyManager, JsManipulator jsManipulator, Store.Store store) : base(dependencyManager, jsManipulator)
+        public Master(IServiceProvider serviceProvider, Store.Store store) : base(serviceProvider)
         {
             _store = store;
         }
@@ -18,8 +16,7 @@ namespace test_app.Components
         protected override ElementBuilder _buildNodes(Guid parentElementId)
         {
             var builder = CreateRoot(parentElementId, "div")
-#warning Tohle se mi moc nelíbí... Možná k tomu vytvořit nějakého ComponentBuildera?
-                .AddChild(new Menu(_dependencyManager, _jsManipulator, _store), ch => ch
+                .AddChild<Menu>(ch => ch
                     .SetCondition(_store.ShowText))
                 .AddText("hello")
                 .AddChild("input", ch => ch

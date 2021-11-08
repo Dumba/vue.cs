@@ -62,5 +62,20 @@ namespace test_app.Generated.Reactive.Visual
             _jsManipulator.RemoveNode(Node.Id);
             return Task.CompletedTask;
         }
+
+        public class Builder
+        {
+            public Builder(DependencyManager dependencyManager)
+            {
+                _dependencyManager = dependencyManager;
+            }
+
+            private readonly DependencyManager _dependencyManager;
+            
+            public ReactiveNode Build(INodePositioned nodePositioned, IReactiveProvider<bool> condition)
+            {
+                return new ReactiveNode(_dependencyManager, nodePositioned, condition);
+            }
+        }
     }
 }

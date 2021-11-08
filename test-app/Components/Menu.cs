@@ -1,14 +1,12 @@
 using System;
 using test_app.Base;
-using test_app.Generated;
 using test_app.Generated.Nodes;
-using test_app.Generated.Reactive;
 
 namespace test_app.Components
 {
     public class Menu : BaseComponent
     {
-        public Menu(DependencyManager dependencyManager, JsManipulator jsManipulator, Store.Store store) : base(dependencyManager, jsManipulator)
+        public Menu(IServiceProvider serviceProvider, Store.Store store) : base(serviceProvider)
         {
             _store = store;
         }

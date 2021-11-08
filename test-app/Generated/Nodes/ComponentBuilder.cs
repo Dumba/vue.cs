@@ -1,29 +1,28 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
 using test_app.Generated.Reactive;
 using test_app.Generated.Reactive.Visual;
 
 namespace test_app.Generated.Nodes
 {
-    public class ComponentBuilder : INodeBuilder
+    public class ComponentBuilder<TComponent> : INodeBuilder where TComponent : BaseComponent
     {
-        public ComponentBuilder(DependencyManager dependencyManager, JsManipulator jsManipulator, BaseComponent component, Guid parentElementId)
+        public ComponentBuilder(IServiceProvider serviceProvider, Guid parentElementId)
         {
-            _dependencyManager = dependencyManager;
-            _jsManipulator = jsManipulator;
+            _serviceProvider = serviceProvider;
 
-            _component = component;
+            _component = serviceProvider.GetService<TComponent>();
             _node = _component.BuildNodes(parentElementId);
         }
 
-        private readonly DependencyManager _dependencyManager;
-        private readonly JsManipulator _jsManipulator;
+        private readonly IServiceProvider _serviceProvider;
 
         private BaseComponent _component;
         private INodePositioned _node;
         private IReactiveProvider<bool> _condition;
 
-        public ComponentBuilder SetCondition(IReactiveProvider<bool> condition)
+        public ComponentBuilder<TComponent> SetCondition(IReactiveProvider<bool> condition)
         {
             _condition = condition;
 
@@ -34,7 +33,7 @@ namespace test_app.Generated.Nodes
         {
             if (_condition != null)
             {
-                _node = new ReactiveNode(_dependencyManager, _node, _condition);
+                _node = _serviceProvider.GetService<ReactiveNode.Builder>().Build(_node, _condition);
             }
 
             return _node;

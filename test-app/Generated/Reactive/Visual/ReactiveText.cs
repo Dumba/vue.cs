@@ -27,5 +27,22 @@ namespace test_app.Generated.Reactive
 
             return Task.CompletedTask;
         }
+
+        public class Builder
+        {
+            public Builder(DependencyManager dependencyManager, JsManipulator jsManipulator)
+            {
+                _dependencyManager = dependencyManager;
+                _jsManipulator = jsManipulator;
+            }
+
+            private readonly DependencyManager _dependencyManager;
+            private readonly JsManipulator _jsManipulator;
+
+            public ReactiveText Build(INode node, IReactiveProvider<string> valueProvider)
+            {
+                return new ReactiveText(_dependencyManager, _jsManipulator, node, valueProvider);
+            }
+        }
     }
 }

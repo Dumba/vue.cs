@@ -1,22 +1,20 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using test_app.Generated;
 using test_app.Generated.Nodes;
-using test_app.Generated.Reactive;
 
 namespace test_app.Base
 {
     public abstract class BaseComponent : IDisposable
     {
-        public BaseComponent(DependencyManager dependencyManager, JsManipulator jsManipulator)
+        public BaseComponent(IServiceProvider serviceProvider)
         {
-            _dependencyManager = dependencyManager;
-            _jsManipulator = jsManipulator;
+            _serviceProvider = serviceProvider;
         }
 
-        protected readonly DependencyManager _dependencyManager;
-        protected readonly JsManipulator _jsManipulator;
+        protected readonly IServiceProvider _serviceProvider;
 
         public DotNetObjectReference<BaseComponent> ThisAsJsInterop
         {
@@ -34,7 +32,7 @@ namespace test_app.Base
 
         protected ElementBuilder CreateRoot(Guid parentElementId, string tagName)
         {
-            return new ElementBuilder(_dependencyManager, _jsManipulator, this, parentElementId, tagName);
+            return new ElementBuilder(_serviceProvider, this, parentElementId, tagName);
         }
 
         public Task RenderAsync(Guid parentElementId, bool init)
@@ -50,7 +48,7 @@ namespace test_app.Base
         public async Task OnlyRenderAsync(INodePositioned node, bool init)
         {
             await AfterBuildNodesAsync();
-            await node.RenderAsync(_jsManipulator, init);
+            await node.RenderAsync(_serviceProvider.GetService<JsManipulator>(), init);
             await AfterRenderAsync();
         }
 

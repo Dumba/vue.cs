@@ -22,6 +22,10 @@ namespace test_app
             builder.Services.AddScoped<Components.Menu>();
             builder.Services.AddScoped<Store.Store>();
 
+            builder.Services.AddTransient<Generated.Reactive.Visual.ReactiveNode.Builder>();
+            builder.Services.AddTransient<Generated.Reactive.ReactiveAttribute.Builder>();
+            builder.Services.AddTransient<Generated.Reactive.ReactiveText.Builder>();
+
             await builder.Build().RunAsync();
         }
     }
