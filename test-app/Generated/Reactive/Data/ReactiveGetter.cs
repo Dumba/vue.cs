@@ -23,7 +23,7 @@ namespace test_app.Generated.Reactive.Data
             return _value;
         }
 
-        public Task Changed(TSourceValue oldValue, TSourceValue newValue)
+        public ValueTask Changed(TSourceValue oldValue, TSourceValue newValue)
         {
             var oldValueComputed = _value;
             _value = _getter(newValue);

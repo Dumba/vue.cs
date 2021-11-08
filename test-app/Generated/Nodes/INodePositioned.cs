@@ -13,6 +13,6 @@ namespace test_app.Generated.Nodes
         INodePositioned NextNode { get; set; }
         INodePositioned GetAsNextVisibleNode { get; }
 
-        Task RenderAsync(JsManipulator jsManipulator, bool init);
+        ValueTask RenderAsync(JsManipulator jsManipulator, bool init);
     }
 }

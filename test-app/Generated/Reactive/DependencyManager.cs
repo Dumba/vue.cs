@@ -6,37 +6,46 @@ namespace test_app.Generated.Reactive
 {
     public class DependencyManager
     {
-        public Task ValueChanged<TValue>(IReactiveProvider<TValue> master, TValue oldValue, TValue newValue)
+        public async ValueTask ValueChanged<TValue>(IReactiveProvider<TValue> master, TValue oldValue, TValue newValue)
         {
             if (!_dependency.TryGetValue(master, out var slaves))
-                return Task.CompletedTask;
+                return;
                 
             var tasks = slaves
                 .Select(slave => (slave as IReactiveConsumer<TValue>).Changed(oldValue, newValue));
                 
-            return Task.WhenAll(tasks);
+            foreach (var task in tasks)
+            {
+                await task;
+            }
         }
 
-        public Task ValueAdded<TValue>(IReactiveEnumerableProvider<TValue> master, TValue newValue)
+        public async ValueTask ValueAdded<TValue>(IReactiveEnumerableProvider<TValue> master, TValue newValue)
         {
             if (!_enumerableDependency.TryGetValue(master, out var slaves))
-                return Task.CompletedTask;
+                return;
                 
             var tasks = slaves
                 .Select(slave => (slave as IReactiveEnumerableConsumer<TValue>).Added(newValue));
                 
-            return Task.WhenAll(tasks);
+            foreach (var task in tasks)
+            {
+                await task;
+            }
         }
 
-        public Task ValueRemoved<TValue>(IReactiveEnumerableProvider<TValue> master, TValue oldValue)
+        public async ValueTask ValueRemoved<TValue>(IReactiveEnumerableProvider<TValue> master, TValue oldValue)
         {
             if (!_enumerableDependency.TryGetValue(master, out var slaves))
-                return Task.CompletedTask;
+                return;
                 
             var tasks = slaves
                 .Select(slave => (slave as IReactiveEnumerableConsumer<TValue>).Removed(oldValue));
-                
-            return Task.WhenAll(tasks);
+            
+            foreach (var task in tasks)
+            {
+                await task;
+            }
         }
 
         public void RegisterDependency<TValue>(IReactiveConsumer<TValue> slave, params IReactiveProvider<TValue>[] masters)

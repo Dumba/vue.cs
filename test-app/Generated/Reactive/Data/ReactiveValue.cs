@@ -18,7 +18,7 @@ namespace test_app.Generated.Reactive.Data
             return _value;
         }
 
-        public Task Set(TValue newValue)
+        public ValueTask Set(TValue newValue)
         {
             var oldValue = _value;
             _value = newValue;

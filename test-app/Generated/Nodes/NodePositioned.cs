@@ -24,7 +24,7 @@ namespace test_app.Generated.Nodes
         public INodePositioned NextNode { get; set; }
         public INodePositioned GetAsNextVisibleNode => this;
 
-        public async Task RenderAsync(JsManipulator jsManipulator, bool init)
+        public async ValueTask RenderAsync(JsManipulator jsManipulator, bool init)
         {
             await Node.RenderAsync(jsManipulator, ParentComponent, ParentElementId, init ? null : NextNode?.GetAsNextVisibleNode?.Node.Id);
             

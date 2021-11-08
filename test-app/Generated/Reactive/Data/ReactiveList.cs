@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace test_app.Generated.Reactive.Data
 {
@@ -15,16 +16,16 @@ namespace test_app.Generated.Reactive.Data
         private readonly DependencyManager _dependencyManager;
         private readonly List<TItem> _list;
 
-        public void Add(TItem newValue)
+        public ValueTask Add(TItem newValue)
         {
             _list.Add(newValue);
-            _dependencyManager.ValueAdded(this, newValue);
+            return _dependencyManager.ValueAdded(this, newValue);
         }
 
-        public void Remove(TItem value)
+        public ValueTask Remove(TItem value)
         {
             _list.Remove(value);
-            _dependencyManager.ValueRemoved(this, value);
+            return _dependencyManager.ValueRemoved(this, value);
         }
 
         public IEnumerator<TItem> GetEnumerator()

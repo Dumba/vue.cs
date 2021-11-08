@@ -21,11 +21,9 @@ namespace test_app.Generated.Reactive.Visual
         public string Value => ValueProvider.Get();
         public IReactiveProvider<string> ValueProvider { get; private set; }
         
-        public Task Changed(string oldValue, string newValue)
+        public ValueTask Changed(string oldValue, string newValue)
         {
-            _jsManipulator.UpdateText(Node.Id, newValue);
-
-            return Task.CompletedTask;
+            return _jsManipulator.UpdateText(Node.Id, newValue);
         }
 
         public class Builder

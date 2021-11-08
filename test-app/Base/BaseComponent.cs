@@ -35,7 +35,7 @@ namespace test_app.Base
             return new ElementBuilder(_serviceProvider, this, parentElementId, tagName);
         }
 
-        public Task RenderAsync(Guid parentElementId, bool init)
+        public ValueTask RenderAsync(Guid parentElementId, bool init)
         {
             var node = BuildNodes(parentElementId);
             return OnlyRenderAsync(node, init);
@@ -45,7 +45,7 @@ namespace test_app.Base
             OnInitialize();
             return _buildNodes(parentElementId).Build();
         }
-        public async Task OnlyRenderAsync(INodePositioned node, bool init)
+        public async ValueTask OnlyRenderAsync(INodePositioned node, bool init)
         {
             await AfterBuildNodesAsync();
             await node.RenderAsync(_serviceProvider.GetService<JsManipulator>(), init);
@@ -57,13 +57,13 @@ namespace test_app.Base
         public virtual void OnInitialize()
         {
         }
-        public virtual Task AfterBuildNodesAsync()
+        public virtual ValueTask AfterBuildNodesAsync()
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
-        public virtual Task AfterRenderAsync()
+        public virtual ValueTask AfterRenderAsync()
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public void Dispose()

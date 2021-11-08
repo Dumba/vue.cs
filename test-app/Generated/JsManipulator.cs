@@ -1,5 +1,6 @@
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using test_app.Base;
 using test_app.Generated.Nodes;
@@ -16,34 +17,34 @@ namespace test_app.Generated
         public IJSRuntime _js;
 
         // attributes
-        public void SetAttribute(Guid elementId, string attributeName, string attributeValue)
+        public ValueTask SetAttribute(Guid elementId, string attributeName, string attributeValue)
         {
-            _js.InvokeVoidAsync("SetAttribute", elementId, attributeName, attributeValue);
+            return _js.InvokeVoidAsync("SetAttribute", elementId, attributeName, attributeValue);
         }
-        public void RemoveAttribute(Guid elementId, string attributeName)
+        public ValueTask RemoveAttribute(Guid elementId, string attributeName)
         {
-            _js.InvokeVoidAsync("RemoveAttribute", elementId, attributeName);
+            return _js.InvokeVoidAsync("RemoveAttribute", elementId, attributeName);
         }
 
         // nodes
-        public void InsertNode(Guid parentElementId, INode node, Guid? insertBeforeNodeId = null)
+        public ValueTask InsertNode(Guid parentElementId, INode node, Guid? insertBeforeNodeId = null)
         {
             // Guid.Empty = Master component
-            _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node.Serialize(), insertBeforeNodeId);
+            return _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node.Serialize(), insertBeforeNodeId);
         }
-        public void RemoveNode(Guid nodeId)
+        public ValueTask RemoveNode(Guid nodeId)
         {
-            _js.InvokeVoidAsync("RemoveNode", nodeId);
+            return _js.InvokeVoidAsync("RemoveNode", nodeId);
         }
-        public void UpdateText(Guid nodeId, string newText)
+        public ValueTask UpdateText(Guid nodeId, string newText)
         {
-            _js.InvokeVoidAsync("UpdateText", nodeId, newText);
+            return _js.InvokeVoidAsync("UpdateText", nodeId, newText);
         }
 
         // events
-        public void AddEventListener(Guid elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
+        public ValueTask AddEventListener(Guid elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
         {
-            _js.InvokeVoidAsync("AddListener", elementId, eventName, component.ThisAsJsInterop, methodName, @params);
+            return _js.InvokeVoidAsync("AddListener", elementId, eventName, component.ThisAsJsInterop, methodName, @params);
         }
     }
 }

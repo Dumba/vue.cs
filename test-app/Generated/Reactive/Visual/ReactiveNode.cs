@@ -35,7 +35,7 @@ namespace test_app.Generated.Reactive.Visual
         }
         public INodePositioned GetAsNextVisibleNode => _condition.Get() ? this : NextNode?.GetAsNextVisibleNode;
 
-        public Task RenderAsync(JsManipulator jsManipulator, bool init)
+        public ValueTask RenderAsync(JsManipulator jsManipulator, bool init)
         {
             _jsManipulator = jsManipulator;
 
@@ -43,14 +43,14 @@ namespace test_app.Generated.Reactive.Visual
                 return _nodePositioned.RenderAsync(jsManipulator, init);
 
             // ignore
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        public Task Changed(bool oldValue, bool newValue)
+        public ValueTask Changed(bool oldValue, bool newValue)
         {
             // doesn't change
             if (oldValue == newValue)
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
 
             // add
             if (newValue)
@@ -59,8 +59,7 @@ namespace test_app.Generated.Reactive.Visual
             }
             
             // remove
-            _jsManipulator.RemoveNode(Node.Id);
-            return Task.CompletedTask;
+            return _jsManipulator.RemoveNode(Node.Id);
         }
 
         public class Builder
