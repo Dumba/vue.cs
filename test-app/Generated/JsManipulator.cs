@@ -30,7 +30,7 @@ namespace test_app.Generated
         public ValueTask InsertNode(Guid parentElementId, INode node, Guid? insertBeforeNodeId = null)
         {
             // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node.Serialize(), insertBeforeNodeId);
+            return _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, insertBeforeNodeId);
         }
         public ValueTask RemoveNode(Guid nodeId)
         {

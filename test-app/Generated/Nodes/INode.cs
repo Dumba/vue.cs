@@ -8,7 +8,6 @@ namespace test_app.Generated.Nodes
     {
         Guid Id { get; }
 
-        object Serialize();
         Task RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null);
     }
 }

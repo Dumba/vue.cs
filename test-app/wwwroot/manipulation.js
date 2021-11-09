@@ -80,7 +80,7 @@ function InsertNode(parentElementId, newNode, insertBeforeNodeId = null) {
 
         const createdNode = newNode.text != null
             ? _createText(newNode.text, newNode.id)
-            : _createElement(newNode.tagName, newNode.id, newNode.attributes);
+            : _createElement(newNode.tagName, newNode.id, newNode.allAttributes);
 
         if (insertBeforeNodeId == null) {
             parentElement.appendChild(createdNode);
