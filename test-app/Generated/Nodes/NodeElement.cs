@@ -6,9 +6,9 @@ using test_app.Base;
 
 namespace test_app.Generated.Nodes
 {
-    public class ElementNode : INode
+    public class NodeElement : INode
     {
-        public ElementNode(string tagName)
+        public NodeElement(string tagName)
         {
             TagName = tagName;
             Id = Guid.NewGuid();
@@ -41,18 +41,16 @@ namespace test_app.Generated.Nodes
         }
 
 
-        public Task RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null)
+        public async ValueTask RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null)
         {
             // tag with attributes
-            jsManipulator.InsertNode(parentElementId, this, insertBeforeNodeId);
+            await jsManipulator.InsertNode(parentElementId, this, insertBeforeNodeId);
 
             // events
             foreach (var eventHandler in EventHandlers)
             {
-                jsManipulator.AddEventListener(Id, parentComponent, eventHandler.@event, eventHandler.componentMethod, eventHandler.@params);
+                await jsManipulator.AddEventListener(Id, parentComponent, eventHandler.@event, eventHandler.componentMethod, eventHandler.@params);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

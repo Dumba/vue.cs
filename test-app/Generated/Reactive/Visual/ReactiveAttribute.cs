@@ -5,7 +5,7 @@ namespace test_app.Generated.Reactive.Visual
 {
     public class ReactiveAttribute : IReactiveConsumer<string>
     {
-        public ReactiveAttribute(DependencyManager dependencyManager, JsManipulator jsManipulator, ElementNode element, string name, IReactiveProvider<string> valueProvider)
+        public ReactiveAttribute(DependencyManager dependencyManager, JsManipulator jsManipulator, NodeElement element, string name, IReactiveProvider<string> valueProvider)
         {
             _jsManipulator = jsManipulator;
 
@@ -18,7 +18,7 @@ namespace test_app.Generated.Reactive.Visual
 
         private readonly JsManipulator _jsManipulator;
         
-        public ElementNode Element { get; }
+        public NodeElement Element { get; }
         public string Name { get; }
         public string Value => ValueProvider.Get();
         public IReactiveProvider<string> ValueProvider { get; private set; }
@@ -39,7 +39,7 @@ namespace test_app.Generated.Reactive.Visual
             private readonly DependencyManager _dependencyManager;
             private readonly JsManipulator _jsManipulator;
 
-            public ReactiveAttribute Build(ElementNode element, string name, IReactiveProvider<string> valueProvider)
+            public ReactiveAttribute Build(NodeElement element, string name, IReactiveProvider<string> valueProvider)
             {
                 return new ReactiveAttribute(_dependencyManager, _jsManipulator, element, name, valueProvider);
             }

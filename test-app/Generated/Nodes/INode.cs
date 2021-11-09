@@ -8,6 +8,6 @@ namespace test_app.Generated.Nodes
     {
         Guid Id { get; }
 
-        Task RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null);
+        ValueTask RenderAsync(JsManipulator jsManipulator, BaseComponent parentComponent, Guid parentElementId, Guid? insertBeforeNodeId = null);
     }
 }

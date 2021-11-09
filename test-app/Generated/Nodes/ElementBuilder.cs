@@ -13,7 +13,7 @@ namespace test_app.Generated.Nodes
         {
             _serviceProvider = serviceProvider;
 
-            _element = new ElementNode(tagName);
+            _element = new NodeElement(tagName);
             _parentComponent = parentComponent;
 
             Node = new NodePositioned(_element, parentComponent, parentElementId);
@@ -21,7 +21,7 @@ namespace test_app.Generated.Nodes
 
         private readonly IServiceProvider _serviceProvider;
 
-        private ElementNode _element;
+        private NodeElement _element;
         private BaseComponent _parentComponent;
         private IReactiveProvider<bool> _condition;
 
@@ -62,7 +62,7 @@ namespace test_app.Generated.Nodes
 
         public ElementBuilder AddText(string text)
         {
-            var child = new NodePositioned(new TextNode(text), _parentComponent, _element.Id);
+            var child = new NodePositioned(new NodeText(text), _parentComponent, _element.Id);
 
             _addChild(child);
 
@@ -70,7 +70,7 @@ namespace test_app.Generated.Nodes
         }
         public ElementBuilder AddText(IReactiveProvider<string> textProvider)
         {
-            var child = new NodePositioned(new TextNode(textProvider.Get()), _parentComponent, _element.Id);
+            var child = new NodePositioned(new NodeText(textProvider.Get()), _parentComponent, _element.Id);
             var reactiveText = _serviceProvider.GetService<ReactiveText.Builder>().Build(child.Node, textProvider);
 
             _addChild(child);
