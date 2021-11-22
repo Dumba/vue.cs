@@ -2,7 +2,7 @@ namespace test_app.Runtime.Reactive.Interfaces
 {
     public interface IReactiveProvider<TValue> : IReactiveProvider
     {
-        TValue Value { get; }
+        TValue Get(IReactiveConsumer<TValue> consumer);
     }
 
     public interface IReactiveProvider

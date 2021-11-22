@@ -25,33 +25,33 @@ namespace test_app.Runtime.Reactive
             }
         }
 
-        // public async ValueTask ValueAdded<TValue>(IReactiveEnumerableProvider<TValue> master, TValue newValue)
-        // {
-        //     if (!_enumerableDependency.TryGetValue(master, out var slaves))
-        //         return;
+        public async ValueTask ValueAdded<TItem>(IReactiveCollectionProvider<TItem> master, TItem newValue)
+        {
+            if (!_enumerableDependency.TryGetValue(master, out var slaves))
+                return;
                 
-        //     var tasks = slaves
-        //         .Select(slave => (slave as IReactiveEnumerableConsumer<TValue>).Added(newValue));
+            var tasks = slaves
+                .Select(slave => (slave as IReactiveCollectionConsumer<TItem>).Added(newValue));
                 
-        //     foreach (var task in tasks)
-        //     {
-        //         await task;
-        //     }
-        // }
+            foreach (var task in tasks)
+            {
+                await task;
+            }
+        }
 
-        // public async ValueTask ValueRemoved<TValue>(IReactiveEnumerableProvider<TValue> master, TValue oldValue)
-        // {
-        //     if (!_enumerableDependency.TryGetValue(master, out var slaves))
-        //         return;
+        public async ValueTask ValueRemoved<TValue>(IReactiveCollectionProvider<TValue> master, TValue oldValue)
+        {
+            if (!_enumerableDependency.TryGetValue(master, out var slaves))
+                return;
                 
-        //     var tasks = slaves
-        //         .Select(slave => (slave as IReactiveEnumerableConsumer<TValue>).Removed(oldValue));
+            var tasks = slaves
+                .Select(slave => (slave as IReactiveCollectionConsumer<TValue>).Removed(oldValue));
             
-        //     foreach (var task in tasks)
-        //     {
-        //         await task;
-        //     }
-        // }
+            foreach (var task in tasks)
+            {
+                await task;
+            }
+        }
 
         public void RegisterDependency<TValue>(IReactiveConsumer<TValue> slave, params IReactiveProvider<TValue>[] masters)
         {
@@ -61,16 +61,16 @@ namespace test_app.Runtime.Reactive
                 _dependency[master].Add(slave);
             }
         }
-        // public void RegisterDependency<TEnumerable>(IReactiveEnumerableConsumer<TEnumerable> slave, params IReactiveEnumerableProvider<TEnumerable>[] masters)
-        // {
-        //     foreach (var master in masters)
-        //     {
-        //         _enumerableDependency.TryAdd(master, new HashSet<IReactiveEnumerableConsumer>());
-        //         _enumerableDependency[master].Add(slave);
-        //     }
-        // }
+        public void RegisterDependency<TEnumerable>(IReactiveCollectionConsumer<TEnumerable> slave, params IReactiveCollectionProvider<TEnumerable>[] masters)
+        {
+            foreach (var master in masters)
+            {
+                _enumerableDependency.TryAdd(master, new HashSet<IReactiveCollectionConsumer>());
+                _enumerableDependency[master].Add(slave);
+            }
+        }
 
         private Dictionary<IReactiveProvider, HashSet<IReactiveConsumer>> _dependency = new Dictionary<IReactiveProvider, HashSet<IReactiveConsumer>>();
-        // private Dictionary<IReactiveEnumerableProvider, HashSet<IReactiveEnumerableConsumer>> _enumerableDependency = new Dictionary<IReactiveEnumerableProvider, HashSet<IReactiveEnumerableConsumer>>();
+        private Dictionary<IReactiveCollectionProvider, HashSet<IReactiveCollectionConsumer>> _enumerableDependency = new Dictionary<IReactiveCollectionProvider, HashSet<IReactiveCollectionConsumer>>();
     }
 }

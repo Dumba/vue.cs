@@ -19,8 +19,11 @@ namespace test_app.Runtime.ReactiveData
 
         private Func<TIn, TOut> _getter;
         private TOut _value;
-        public TOut Value => _value;
-
+        public TOut Get(IReactiveConsumer<TOut> consumer)
+        {
+            _dependencyManager.RegisterDependency(consumer, this);
+            return _value;
+        }
         public ValueTask Changed(TIn oldValue, TIn newValue)
         {
             var oldOutValue = _value;

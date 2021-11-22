@@ -14,8 +14,11 @@ namespace test_app.Runtime.Reactive.Data
         private readonly DependencyManager _dependencyManager;
 
         private TValue _value;
-        public TValue Value => _value;
-
+        public TValue Get(IReactiveConsumer<TValue> consumer)
+        {
+            _dependencyManager.RegisterDependency(consumer, this);
+            return _value;
+        }
         public ValueTask Set(TValue value)
         {
             var oldValue = _value;
