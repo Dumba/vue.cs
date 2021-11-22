@@ -14,6 +14,6 @@ namespace test_app.Runtime.Nodes
         public Guid Id { get; }
         public string Text { get; }
 
-        public IEnumerable<IPageItem> GetNodes { get { yield return this; } }
+        public IEnumerable<IPageNode> Nodes { get { yield return this; } }
     }
 }

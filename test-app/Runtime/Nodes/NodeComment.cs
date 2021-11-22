@@ -5,15 +5,15 @@ namespace test_app.Runtime.Nodes
 {
     public class NodeComment : IPageNode
     {
-        public NodeComment(string content)
+        public NodeComment(string content, Guid? id = null)
         {
-            Id = Guid.NewGuid();
+            Id = id ?? Guid.NewGuid();
             Content = content;
         }
 
         public Guid Id { get; }
         public string Content { get; }
 
-        public IEnumerable<IPageItem> GetNodes { get { yield return this; } }
+        public IEnumerable<IPageNode> Nodes { get { yield return this; } }
     }
 }

@@ -4,6 +4,9 @@ namespace test_app.Runtime.Nodes
 {
     public interface IPageItem
     {
-        IEnumerable<IPageItem> GetNodes { get; }
+        /// <summary>
+        ///   Return all direct nodes, recursively include template-nodes
+        /// </summary>
+        IEnumerable<IPageNode> Nodes { get; }
     }
 }

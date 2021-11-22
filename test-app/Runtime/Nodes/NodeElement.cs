@@ -26,6 +26,6 @@ namespace test_app.Runtime.Nodes
 
         public List<IPageItem> Children { get; }
 
-        public IEnumerable<IPageItem> GetNodes { get { yield return this; } }
+        public IEnumerable<IPageNode> Nodes { get { yield return this; } }
     }
 }

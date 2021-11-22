@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace test_app.Runtime.Nodes
 {
@@ -11,6 +12,6 @@ namespace test_app.Runtime.Nodes
 
         public IEnumerable<IPageItem> Items { get; }
 
-        public IEnumerable<IPageItem> GetNodes => Items;
+        public IEnumerable<IPageNode> Nodes => Items.SelectMany(i => i.Nodes);
     }
 }
