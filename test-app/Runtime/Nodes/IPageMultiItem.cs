@@ -4,6 +4,6 @@ namespace test_app.Runtime.Nodes
 {
     public interface IPageMultiItem : IPageItem
     {
-        IEnumerable<IPageItem> Items { get; }
+        List<IPageItem> Items { get; }
     }
 }

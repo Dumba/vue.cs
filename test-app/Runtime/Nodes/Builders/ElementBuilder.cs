@@ -1,31 +1,24 @@
 using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
-using test_app.Generated.Reactive;
-using test_app.Generated.Reactive.Visual;
+using test_app.Runtime.Reactive.Interfaces;
+using test_app.Runtime.Reactive.PageItems;
 
-namespace test_app.Generated.Nodes
+namespace test_app.Runtime.Nodes.Builders
 {
-    public class ElementBuilder : INodeBuilder
+    public class ElementBuilder : IBuilder
     {
-        public ElementBuilder(IServiceProvider serviceProvider, BaseComponent parentComponent, Guid parentElementId, string tagName)
+        public ElementBuilder(IServiceProvider serviceProvider, BaseComponent parentComponent, string tagName)
         {
             _serviceProvider = serviceProvider;
-
-            _element = new NodeElement(tagName);
             _parentComponent = parentComponent;
-
-            Node = new NodePositioned(_element, parentComponent, parentElementId);
+            _element = new NodeElement(tagName);
         }
 
         private readonly IServiceProvider _serviceProvider;
-
-        private NodeElement _element;
         private BaseComponent _parentComponent;
+        private NodeElement _element;
         private IReactiveProvider<bool> _condition;
-
-        public INodePositioned Node { get; private set; }
 
         public ElementBuilder AddClass(string className)
         {
@@ -41,8 +34,9 @@ namespace test_app.Generated.Nodes
         }
         public ElementBuilder AddAttribute(string name, IReactiveProvider<string> valueProvider)
         {
-            var reactiveAttribute = _serviceProvider.GetService<ReactiveAttribute.Builder>().Build(_element, name, valueProvider);
-            _element.Attributes.Add(name, reactiveAttribute.Value);
+            var reactiveAttribute = _serviceProvider.GetService<ReactiveAttribute.Builder>()
+                .Build(_element.Id, name, valueProvider, out var text);
+            _element.Attributes.Add(name, text);
 
             return this;
         }
@@ -56,13 +50,12 @@ namespace test_app.Generated.Nodes
         public ElementBuilder SetCondition(IReactiveProvider<bool> condition)
         {
             _condition = condition;
-
             return this;
         }
 
         public ElementBuilder AddText(string text)
         {
-            var child = new NodePositioned(new NodeText(text), _parentComponent, _element.Id);
+            var child = new NodeText(text);
 
             _addChild(child);
 
@@ -70,9 +63,9 @@ namespace test_app.Generated.Nodes
         }
         public ElementBuilder AddText(IReactiveProvider<string> textProvider)
         {
-            var child = new NodePositioned(new NodeText(textProvider.Get()), _parentComponent, _element.Id);
-            var reactiveText = _serviceProvider.GetService<ReactiveText.Builder>().Build(child.Node, textProvider);
-
+            var reactiveText = _serviceProvider.GetService<ReactiveText.Builder>()
+                .Build(_element.Id, textProvider, out var text);
+            var child = new NodeText(text);
             _addChild(child);
 
             return this;
@@ -80,7 +73,7 @@ namespace test_app.Generated.Nodes
 
         public ElementBuilder AddChild(string tagName, Action<ElementBuilder> setupChild = null)
         {
-            var childBuilder = new ElementBuilder(_serviceProvider, _parentComponent, _element.Id, tagName);
+            var childBuilder = new ElementBuilder(_serviceProvider, _parentComponent, tagName);
             if (setupChild != null)
                 setupChild(childBuilder);
 
@@ -88,27 +81,21 @@ namespace test_app.Generated.Nodes
 
             return this;
         }
-        public ElementBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
-            where TComponent : BaseComponent
+        // public ElementBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
+        //     where TComponent : BaseComponent
+        // {
+        //     var childBuilder = new ComponentBuilder<TComponent>(_serviceProvider, _element.Id);
+        //     if (setupChild != null)
+        //         setupChild(childBuilder);
+
+        //     _addChild(childBuilder.Build());
+
+        //     return this;
+        // }
+
+        private void _addChild(IPageItem child)
         {
-            var childBuilder = new ComponentBuilder<TComponent>(_serviceProvider, _element.Id);
-            if (setupChild != null)
-                setupChild(childBuilder);
-
-            _addChild(childBuilder.Build());
-
-            return this;
-        }
-
-        private void _addChild(INodePositioned child)
-        {
-            var prevChild = Node.Children.LastOrDefault();
-            if (prevChild != null)
-            {
-                prevChild.NextNode = child;
-                child.PrevNode = prevChild;
-            }
-            Node.Children.Add(child);
+            _element.Children.Add(child);
         }
 
         // public ElementBuilder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
@@ -139,14 +126,18 @@ namespace test_app.Generated.Nodes
         //     return this;
         // }
 
-        public INodePositioned Build()
+        public IPageItem Build()
         {
             if (_condition != null)
             {
-                Node = _serviceProvider.GetService<ReactiveNode.Builder>().Build(Node, _condition);
+                var reactiveNode = _serviceProvider.GetService<ReactivePageItem.Builder>()
+                    .Build(_element, _condition, out bool visible);
+
+                if (visible == false)
+                    return new NodeComment(id: _element.Id);
             }
 
-            return Node;
+            return _element;
         }
     }
 }

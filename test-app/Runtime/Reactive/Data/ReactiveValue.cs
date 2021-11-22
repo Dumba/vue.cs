@@ -4,11 +4,11 @@ using test_app.Runtime.Reactive.Interfaces;
 namespace test_app.Runtime.Reactive.Data
 {
     public class ReactiveValue<TValue> : IReactiveProvider<TValue>
-        where TValue : class
     {
-        public ReactiveValue(DependencyManager dependencyManager)
+        public ReactiveValue(DependencyManager dependencyManager, TValue value = default)
         {
             _dependencyManager = dependencyManager;
+            _value = value;
         }
 
         private readonly DependencyManager _dependencyManager;

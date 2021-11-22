@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using test_app.Generated;
-using test_app.Generated.Reactive;
+using test_app.Extensions;
 
 namespace test_app
 {
@@ -14,17 +13,13 @@ namespace test_app
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>(ParentSelector);
 
+            builder.Services.AddVueCs();
+
             // builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.AddScoped<JsManipulator>();
-            builder.Services.AddScoped<DependencyManager>();
 
             builder.Services.AddScoped<Components.Master>();
             builder.Services.AddScoped<Components.Menu>();
             builder.Services.AddScoped<Store.Store>();
-
-            builder.Services.AddTransient<Generated.Reactive.Visual.ReactiveNode.Builder>();
-            builder.Services.AddTransient<Generated.Reactive.Visual.ReactiveAttribute.Builder>();
-            builder.Services.AddTransient<Generated.Reactive.Visual.ReactiveText.Builder>();
 
             await builder.Build().RunAsync();
         }

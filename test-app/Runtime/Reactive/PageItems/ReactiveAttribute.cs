@@ -2,13 +2,16 @@ using System;
 using System.Threading.Tasks;
 using test_app.Runtime.Reactive.Interfaces;
 
-namespace test_app.Runtime.Reactive
+namespace test_app.Runtime.Reactive.PageItems
 {
     public class ReactiveAttribute : IReactiveConsumer<string>
     {
-        public ReactiveAttribute(JsManipulator jsManipulator)
+        public ReactiveAttribute(JsManipulator jsManipulator, Guid pageItemId, string attributeName)
         {
             _jsManipulator = jsManipulator;
+
+            PageItemId = pageItemId;
+            AttributeName = attributeName;
         }
 
         private readonly JsManipulator _jsManipulator;
@@ -19,6 +22,23 @@ namespace test_app.Runtime.Reactive
         public ValueTask Changed(string oldValue, string newValue)
         {
             return _jsManipulator.SetAttribute(PageItemId, AttributeName, newValue);
+        }
+
+        public class Builder
+        {
+            public Builder(JsManipulator jsManipulator)
+            {
+                _jsManipulator = jsManipulator;
+            }
+
+            private readonly JsManipulator _jsManipulator;
+
+            public ReactiveAttribute Build(Guid pageItemId, string attributeName, IReactiveProvider<string> valueProvider, out string initValue)
+            {
+                var reactiveAttribute = new ReactiveAttribute(_jsManipulator, pageItemId, attributeName);
+                initValue = valueProvider.Get(reactiveAttribute);
+                return reactiveAttribute;
+            }
         }
     }
 }

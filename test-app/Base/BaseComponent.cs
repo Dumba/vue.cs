@@ -2,8 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
-using test_app.Generated;
-using test_app.Generated.Nodes;
+using test_app.Runtime.Nodes;
+using test_app.Runtime.Nodes.Builders;
+using test_app.Runtime.Reactive;
 
 namespace test_app.Base
 {
@@ -30,41 +31,19 @@ namespace test_app.Base
         }
         private DotNetObjectReference<BaseComponent> _thisAsJsInterop;
 
-        protected ElementBuilder CreateRoot(Guid parentElementId, string tagName)
+        public ValueTask Render(Guid parentId)
         {
-            return new ElementBuilder(_serviceProvider, this, parentElementId, tagName);
+            var jsManipulator = _serviceProvider.GetService<JsManipulator>();
+            
+            var builder = new TemplateBuilder(_serviceProvider, this);
+            Setup(builder);
+
+            return builder
+                .Build()
+                .Render(jsManipulator, parentId);
         }
 
-        public ValueTask RenderAsync(Guid parentElementId, bool init)
-        {
-            var node = BuildNodes(parentElementId);
-            return OnlyRenderAsync(node, init);
-        }
-        public INodePositioned BuildNodes(Guid parentElementId)
-        {
-            OnInitialize();
-            return _buildNodes(parentElementId).Build();
-        }
-        public async ValueTask OnlyRenderAsync(INodePositioned node, bool init)
-        {
-            await AfterBuildNodesAsync();
-            await node.RenderAsync(_serviceProvider.GetService<JsManipulator>(), init);
-            await AfterRenderAsync();
-        }
-
-        protected abstract INodeBuilder _buildNodes(Guid parentElementId);
-        
-        public virtual void OnInitialize()
-        {
-        }
-        public virtual ValueTask AfterBuildNodesAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
-        public virtual ValueTask AfterRenderAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
+        public abstract void Setup(TemplateBuilder builder);
 
         public void Dispose()
         {

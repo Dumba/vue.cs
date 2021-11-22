@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using test_app.Runtime.Reactive;
 using test_app.Runtime.Reactive.Interfaces;
 
-namespace test_app.Runtime.ReactiveData
+namespace test_app.Runtime.Reactive.Data
 {
     public class ReactiveCollectionGetter<TItemIn, TItemOut> : IReactiveCollectionConsumer<TItemIn>, IReactiveCollectionProvider<TItemOut>
     {
@@ -12,6 +11,7 @@ namespace test_app.Runtime.ReactiveData
         {
             _dependencyManager = dependencyManager;
             _getter = getter;
+            _list = new List<TItemOut>();
         }
 
         private readonly DependencyManager _dependencyManager;

@@ -1,6 +1,6 @@
 using System;
 using test_app.Base;
-using test_app.Generated.Nodes;
+using test_app.Runtime.Nodes.Builders;
 
 namespace test_app.Components
 {
@@ -13,9 +13,9 @@ namespace test_app.Components
 
         private readonly Store.Store _store;
 
-        protected override INodeBuilder _buildNodes(Guid parentElementId)
+        public override void Setup(TemplateBuilder builder)
         {
-            var builder = CreateRoot(parentElementId, "menu")
+            builder.AddChild("menu", menu => menu
                 .AddClass("main")
                 .AddChild("ul", ul => ul
                     .AddChild("li", li => li
@@ -23,9 +23,7 @@ namespace test_app.Components
                         .AddEventListener("click", "MoveTo", "home")))
                 .AddChild("span", ch => ch
                     .AddText("Hidden Menu")
-                    .SetCondition(_store.Hidden));
-
-            return builder;
+                    .SetCondition(_store.Hidden)));
         }
 
         [Microsoft.JSInterop.JSInvokable]

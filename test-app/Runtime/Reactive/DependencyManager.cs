@@ -8,9 +8,8 @@ namespace test_app.Runtime.Reactive
     public class DependencyManager
     {
         public async ValueTask ValueChanged<TValue>(IReactiveProvider<TValue> master, TValue oldValue, TValue newValue)
-            where TValue : class
         {
-            if (oldValue == newValue)
+            if (oldValue.GetHashCode() == newValue.GetHashCode())
                 return;
 
             if (!_dependency.TryGetValue(master, out var slaves))

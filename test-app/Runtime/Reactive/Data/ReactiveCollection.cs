@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using test_app.Runtime.Reactive;
 using test_app.Runtime.Reactive.Interfaces;
 
-namespace test_app.Runtime.ReactiveData
+namespace test_app.Runtime.Reactive.Data
 {
     public class ReactiveCollection<TItem> : IReactiveCollectionProvider<TItem>
     {
         public ReactiveCollection(DependencyManager dependencyManager)
         {
             _dependencyManager = dependencyManager;
+            _list = new List<TItem>();
         }
 
         private readonly DependencyManager _dependencyManager;

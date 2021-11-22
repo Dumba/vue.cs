@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace test_app.Runtime.Nodes
 {
@@ -23,6 +24,20 @@ namespace test_app.Runtime.Nodes
         public Dictionary<string, string> Attributes { get; }
         public Dictionary<string, string> Styles { get; }
         public List<(string @event, string componentMethod, object[] @params)> EventHandlers { get; }
+
+        public Dictionary<string, string> AllAttributes
+        {
+            get
+            {
+                var result = Attributes.ToDictionary(pair => pair.Key, pair => pair.Value);
+                if (Classes.Any())
+                    result.Add("class", string.Join(" ", Classes));
+                if (Styles.Any())
+                    result.Add("style", string.Join("", Styles.Select(pair => $"{pair.Key}:{pair.Value};")));
+
+                return result;
+            }
+        }
 
         public List<IPageItem> Children { get; }
 

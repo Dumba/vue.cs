@@ -5,10 +5,10 @@ namespace test_app.Runtime.Nodes
 {
     public class NodeComment : IPageNode
     {
-        public NodeComment(string content, Guid? id = null)
+        public NodeComment(string content = null, Guid? id = null)
         {
             Id = id ?? Guid.NewGuid();
-            Content = content;
+            Content = content ?? $" placeholder for {Id} ";
         }
 
         public Guid Id { get; }

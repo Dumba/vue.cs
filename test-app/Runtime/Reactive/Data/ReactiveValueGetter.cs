@@ -1,18 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using test_app.Runtime.Reactive;
 using test_app.Runtime.Reactive.Interfaces;
 
-namespace test_app.Runtime.ReactiveData
+namespace test_app.Runtime.Reactive.Data
 {
     public class ReactiveValueGetter<TIn, TOut> : IReactiveConsumer<TIn>, IReactiveProvider<TOut>
-        where TIn : class
-        where TOut : class
     {
-        public ReactiveValueGetter(DependencyManager dependencyManager, Func<TIn, TOut> getter)
+        public ReactiveValueGetter(DependencyManager dependencyManager, Func<TIn, TOut> getter, IReactiveProvider<TIn> valueProvider)
         {
             _dependencyManager = dependencyManager;
             _getter = getter;
+            var valueIn = valueProvider.Get(this);
+            _value = _getter(valueIn);
         }
 
         private readonly DependencyManager _dependencyManager;
@@ -30,6 +29,21 @@ namespace test_app.Runtime.ReactiveData
             _value = _getter(newValue);
 
             return _dependencyManager.ValueChanged(this, oldOutValue, _value);
+        }
+
+        public class Builder
+        {
+            public Builder(DependencyManager dependencyManager)
+            {
+                _dependencyManager = dependencyManager;
+            }
+
+            private readonly DependencyManager _dependencyManager;
+
+            public ReactiveValueGetter<TIn, TOut> Build(Func<TIn, TOut> getter, IReactiveProvider<TIn> valueProvider)
+            {
+                return new ReactiveValueGetter<TIn, TOut>(_dependencyManager, getter, valueProvider);
+            }
         }
     }
 }

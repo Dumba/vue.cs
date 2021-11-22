@@ -1,6 +1,6 @@
 using System;
 using test_app.Base;
-using test_app.Generated.Nodes;
+using test_app.Runtime.Nodes.Builders;
 
 namespace test_app.Components
 {
@@ -13,39 +13,38 @@ namespace test_app.Components
 
         private readonly Store.Store _store;
 
-        protected override ElementBuilder _buildNodes(Guid parentElementId)
+        public override void Setup(TemplateBuilder builder)
         {
-            var builder = CreateRoot(parentElementId, "div")
-                .AddChild<Menu>(ch => ch
-                    .SetCondition(_store.ShowText))
+            builder
+                // .AddChild<Menu>(ch => ch
+                //     .SetCondition(_store.ShowText))
                 .AddText("hello")
                 .AddChild("input", ch => ch
                     .AddClass("ccc")
-                    .AddAttribute("value", _store.Message.Get())
+                    .AddAttribute("value", _store.Message)
                     .AddEventListener("keyup", "Test", "ble", "ble"))
                 .AddChild("button", ch => ch
-                    .AddEventListener("click", "Test", "Hello", "hal")
+                //     .AddEventListener("click", "Test", "Hello", "hal")
                     .AddText(_store.Label)
                     .AddText("Click? :-)"))
-                .AddChild("button", ch => ch
-                    .AddEventListener("click", "ToggleHide")
-                    .AddText(_store.ShowHideLabel))
-                .AddChild("button", ch => ch
-                    .AddEventListener("click", "ToggleHide2")
-                    .AddText("ShowHideLabel - 2"))
+                // .AddChild("button", ch => ch
+                //     .AddEventListener("click", "ToggleHide")
+                //     .AddText(_store.ShowHideLabel))
+                // .AddChild("button", ch => ch
+                //     .AddEventListener("click", "ToggleHide2")
+                //     .AddText("ShowHideLabel - 2"))
                 // .AddChildren(_store.List, "span", (ch, i) => ch
                 //     .AddText(i)
                 //     .AddEventListener("click", "Remove", i))
-                .AddChild("div", ch => ch
-                    .SetCondition(_store.ShowText)
-                    .AddText("Vidíš mě?"))
-                .AddChild("div", ch => ch
-                    .SetCondition(_store.Hidden)
-                    .AddText("next hidden"))
-                .AddChild("div", ch => ch
-                    .AddText("Poslední"));
-
-            return builder;
+                // .AddChild("div", ch => ch
+                //     .SetCondition(_store.ShowText)
+                //     .AddText("Vidíš mě?"))
+                // .AddChild("div", ch => ch
+                //     .SetCondition(_store.Hidden)
+                //     .AddText("next hidden"))
+                // .AddChild("div", ch => ch
+                //     .AddText("Poslední"))
+                ;
         }
 
         [Microsoft.JSInterop.JSInvokable]
@@ -54,22 +53,22 @@ namespace test_app.Components
             _store.Message.Set(ev.Value);
         }
 
-        [Microsoft.JSInterop.JSInvokable]
-        public void ToggleHide(Event ev)
-        {
-            _store.ShowText.Set(!_store.ShowText.Get());
-        }
+        // [Microsoft.JSInterop.JSInvokable]
+        // public void ToggleHide(Event ev)
+        // {
+        //     _store.ShowText.Set(!_store.ShowText.Get());
+        // }
 
-        [Microsoft.JSInterop.JSInvokable]
-        public void ToggleHide2(Event ev)
-        {
-            _store.Hidden.Set(!_store.Hidden.Get());
-        }
+        // [Microsoft.JSInterop.JSInvokable]
+        // public void ToggleHide2(Event ev)
+        // {
+        //     _store.Hidden.Set(!_store.Hidden.Get());
+        // }
 
-        [Microsoft.JSInterop.JSInvokable]
-        public void Remove(Event ev, string item)
-        {
-            _store.List.Remove(item);
-        }
+        // [Microsoft.JSInterop.JSInvokable]
+        // public void Remove(Event ev, string item)
+        // {
+        //     _store.List.Remove(item);
+        // }
     }
 }
