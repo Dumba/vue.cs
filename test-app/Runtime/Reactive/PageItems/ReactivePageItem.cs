@@ -26,6 +26,14 @@ namespace test_app.Runtime.Reactive.PageItems
                 foreach (var node in PageItem.Nodes)
                 {
                     await _jsManipulator.ReplaceNode(node);
+
+                    if (node is INodeParent element)
+                    {
+                        foreach (var child in element.Children)
+                        {
+                            await child.Render(_jsManipulator, node.Id);
+                        }
+                    }
                 }
             }
             // hide
@@ -37,7 +45,7 @@ namespace test_app.Runtime.Reactive.PageItems
                 }
             }
         }
-        
+
         public class Builder
         {
             public Builder(JsManipulator jsManipulator)

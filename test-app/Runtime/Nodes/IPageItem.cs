@@ -11,6 +11,7 @@ namespace test_app.Runtime.Nodes
         ///   Return all direct nodes, recursively include template-nodes
         /// </summary>
         IEnumerable<IPageNode> Nodes { get; }
+        bool IsVisible { get; }
     }
 
     public static class IPageItemExtension
@@ -19,13 +20,13 @@ namespace test_app.Runtime.Nodes
         {
             foreach (var node in self.Nodes)
             {
-                await jsManipulator.InsertNode(parentId, node);
+                await jsManipulator.InsertNode(parentId, node.IsVisible ? node : new NodeComment(id: node.Id));
 
-                if (node is NodeElement element)
+                if (node is INodeParent element)
                 {
                     foreach (var child in element.Children)
                     {
-                        await child.Render(jsManipulator, element.Id);
+                        await child.Render(jsManipulator, node.Id);
                     }
                 }
             }

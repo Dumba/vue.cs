@@ -16,7 +16,9 @@ namespace test_app.Runtime.Reactive.Data
         private TValue _value;
         public TValue Get(IReactiveConsumer<TValue> consumer)
         {
-            _dependencyManager.RegisterDependency(consumer, this);
+            if (consumer is not null)
+                _dependencyManager.RegisterDependency(consumer, this);
+                
             return _value;
         }
         public ValueTask Set(TValue value)

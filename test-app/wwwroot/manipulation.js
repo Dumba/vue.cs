@@ -7,33 +7,16 @@ function _getMapping() {
 
     return window.VueCs.nodeMapping;
 }
-function _createElement(tagName, id, attributes) {
-    var element = document.createElement(tagName);
-    var mapping = _getMapping();
-    mapping[id] = element;
-
-    if (typeof(attributes) == 'object') {
-        Object.keys(attributes).forEach(key => {
-            element.setAttribute(key, attributes[key]);
-        });
-    }
-    
-    return element;
-}
-function _createText(text, id) {
-    var element = document.createTextNode(text);
-    var mapping = _getMapping();
-    mapping[id] = element;
-
-    return element;
-}
 function _getNode(id) {
-    var mapping = _getMapping();
-    // mapping or master component
-    var node = mapping[id] ?? document.querySelector(id);
+    // guid
+    if (new RegExp('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}').test(id)) {
+        return _getMapping()[id];
+    }
 
-    return node;
+    // any selector (master element)
+    return document.querySelector(id);
 }
+
 function _serializeEvent(event)
 {
     return {
@@ -44,6 +27,53 @@ function _serializeEvent(event)
         y: event.y,
         pageX: event.pageX,
         pageY: event.pageY,
+    }
+}
+
+function _createElement(tagName, id, attributes) {
+    var element = document.createElement(tagName);
+    _getMapping()[id] = element;
+
+    if (typeof(attributes) == 'object') {
+        Object.keys(attributes).forEach(key => {
+            element.setAttribute(key, attributes[key]);
+        });
+    }
+    
+    return element;
+}
+function _createText(text, id) {
+    var node = document.createTextNode(text);
+    var mapping = _getMapping();
+    mapping[id] = node;
+
+    return node;
+}
+function _createComment(content, id) {
+    var node = document.createComment(content);
+    var mapping = _getMapping();
+    mapping[id] = node;
+
+    return node;
+}
+function _createNode(node) {
+    if (node.text != null) {
+        return _createText(node.text, node.id);
+    }
+
+    if (node.content != null) {
+        return _createComment(node.content, node.id);
+    }
+
+    return _createElement(node.tagName, node.id, node.allAttributes);
+}
+function _insert(newNode, parentElement, nextNode = null) {
+    const createdNode = _createNode(newNode);
+
+    if (nextNode == null) {
+        parentElement.appendChild(createdNode);
+    } else {
+        parentElement.insertBefore(createdNode, nextNode);
     }
 }
 
@@ -74,20 +104,14 @@ function RemoveAttribute(elementId, attributeName) {
 }
 
 // nodes
-function InsertNode(parentElementId, newNode, insertBeforeNodeId = null) {
+function InsertNode(parentElementId, newNode, nextNodeId = null) {
     try {
         const parentElement = _getNode(parentElementId);
+        const nextNode = nextNodeId != null
+            ? _getNode(nextNodeId)
+            : null;
 
-        const createdNode = newNode.text != null
-            ? _createText(newNode.text, newNode.id)
-            : _createElement(newNode.tagName, newNode.id, newNode.allAttributes);
-
-        if (insertBeforeNodeId == null) {
-            parentElement.appendChild(createdNode);
-        } else {
-            var nextNode = _getNode(insertBeforeNodeId);
-            parentElement.insertBefore(createdNode, nextNode);
-        }
+        _insert(newNode, parentElement, nextNode);
     }
     catch (err) {
         console.error(err);
@@ -98,6 +122,16 @@ function RemoveNode(nodeId) {
         var node = _getNode(nodeId);
 
         node.parentElement.removeChild(node);
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+function ReplaceNode(nodeId, newNode) {
+    try {
+        var oldNode = _getNode(nodeId);
+        _insert(newNode, oldNode.parentElement, oldNode);
+        oldNode.parentElement.removeChild(oldNode);
     }
     catch (err) {
         console.error(err);

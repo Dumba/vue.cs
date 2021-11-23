@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using test_app.Runtime.Nodes.Models;
+using test_app.Runtime.Reactive.Interfaces;
 
 namespace test_app.Runtime.Nodes
 {
@@ -13,7 +15,7 @@ namespace test_app.Runtime.Nodes
             Classes = new List<string>();
             Attributes = new Dictionary<string, string>();
             Styles = new Dictionary<string, string>();
-            EventHandlers = new List<(string @event, string componentMethod, object[] @params)>();
+            EventHandlers = new List<EventHandlerData>();
 
             Children = new List<IPageItem>();
         }
@@ -23,7 +25,7 @@ namespace test_app.Runtime.Nodes
         public List<string> Classes { get; }
         public Dictionary<string, string> Attributes { get; }
         public Dictionary<string, string> Styles { get; }
-        public List<(string @event, string componentMethod, object[] @params)> EventHandlers { get; }
+        public List<EventHandlerData> EventHandlers { get; }
 
         public Dictionary<string, string> AllAttributes
         {
@@ -40,7 +42,9 @@ namespace test_app.Runtime.Nodes
         }
 
         public List<IPageItem> Children { get; }
+        public IReactiveProvider<bool> Condition { get; set; }
 
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
+        public bool IsVisible => Condition?.Get(null) != false;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
+using test_app.Runtime.Nodes.Models;
 using test_app.Runtime.Reactive.Interfaces;
 using test_app.Runtime.Reactive.PageItems;
 
@@ -18,7 +19,6 @@ namespace test_app.Runtime.Nodes.Builders
         private readonly IServiceProvider _serviceProvider;
         private BaseComponent _parentComponent;
         private NodeElement _element;
-        private IReactiveProvider<bool> _condition;
 
         public ElementBuilder AddClass(string className)
         {
@@ -42,14 +42,14 @@ namespace test_app.Runtime.Nodes.Builders
         }
         public ElementBuilder AddEventListener(string eventName, string methodName, params object[] @params)
         {
-            _element.EventHandlers.Add((eventName, methodName, @params));
+            _element.EventHandlers.Add(new EventHandlerData { Event = eventName, Component = _parentComponent, ComponentMethodName = methodName, Params = @params });
 
             return this;
         }
 
         public ElementBuilder SetCondition(IReactiveProvider<bool> condition)
         {
-            _condition = condition;
+            _element.Condition = condition;
             return this;
         }
 
@@ -63,9 +63,10 @@ namespace test_app.Runtime.Nodes.Builders
         }
         public ElementBuilder AddText(IReactiveProvider<string> textProvider)
         {
+            var id = Guid.NewGuid();
             var reactiveText = _serviceProvider.GetService<ReactiveText.Builder>()
-                .Build(_element.Id, textProvider, out var text);
-            var child = new NodeText(text);
+                .Build(id, textProvider, out var text);
+            var child = new NodeText(text, id);
             _addChild(child);
 
             return this;
@@ -81,17 +82,17 @@ namespace test_app.Runtime.Nodes.Builders
 
             return this;
         }
-        // public ElementBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
-        //     where TComponent : BaseComponent
-        // {
-        //     var childBuilder = new ComponentBuilder<TComponent>(_serviceProvider, _element.Id);
-        //     if (setupChild != null)
-        //         setupChild(childBuilder);
+        public ElementBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
+            where TComponent : BaseComponent
+        {
+            var childBuilder = new ComponentBuilder<TComponent>(_serviceProvider);
+            if (setupChild != null)
+                setupChild(childBuilder);
 
-        //     _addChild(childBuilder.Build());
+            _addChild(childBuilder.Build());
 
-        //     return this;
-        // }
+            return this;
+        }
 
         private void _addChild(IPageItem child)
         {
@@ -128,13 +129,10 @@ namespace test_app.Runtime.Nodes.Builders
 
         public IPageItem Build()
         {
-            if (_condition != null)
+            if (_element.Condition != null)
             {
                 var reactiveNode = _serviceProvider.GetService<ReactivePageItem.Builder>()
-                    .Build(_element, _condition, out bool visible);
-
-                if (visible == false)
-                    return new NodeComment(id: _element.Id);
+                    .Build(_element, _element.Condition, out bool visible);
             }
 
             return _element;

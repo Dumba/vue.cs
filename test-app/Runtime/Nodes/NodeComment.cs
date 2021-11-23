@@ -15,5 +15,6 @@ namespace test_app.Runtime.Nodes
         public string Content { get; }
 
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
+        public bool IsVisible => true;
     }
 }

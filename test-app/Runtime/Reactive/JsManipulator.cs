@@ -27,10 +27,18 @@ namespace test_app.Runtime.Reactive
         }
 
         // nodes
-        public ValueTask InsertNode(Guid parentElementId, IPageNode node)
+        public async ValueTask InsertNode(Guid parentElementId, IPageNode node)
         {
             // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, null);
+            await _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, null);
+
+            if (node is NodeElement element)
+            {
+                foreach (var eventHandler in element.EventHandlers)
+                {
+                    await AddEventListener(element.Id, eventHandler.Component, eventHandler.Event, eventHandler.ComponentMethodName, eventHandler.Params);
+                }
+            }
         }
         public ValueTask InsertNode(IPageNode node, Guid insertBeforeNodeId)
         {

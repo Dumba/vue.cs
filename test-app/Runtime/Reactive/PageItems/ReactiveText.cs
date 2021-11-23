@@ -33,7 +33,7 @@ namespace test_app.Runtime.Reactive.PageItems
 
             public ReactiveText Build(Guid pageItemId, IReactiveProvider<string> valueProvider, out string initValue)
             {
-                var reactiveText =  new ReactiveText(_jsManipulator, pageItemId);
+                var reactiveText = new ReactiveText(_jsManipulator, pageItemId);
                 initValue = valueProvider.Get(reactiveText);
                 return reactiveText;
             }

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
+using test_app.Runtime.Nodes.Models;
 using test_app.Runtime.Reactive.Interfaces;
 using test_app.Runtime.Reactive.PageItems;
 
@@ -18,7 +19,6 @@ namespace test_app.Runtime.Nodes.Builders
         private readonly IServiceProvider _serviceProvider;
         private BaseComponent _parentComponent;
         private Template _template;
-        private IReactiveProvider<bool> _condition;
         
 
         public TemplateBuilder AddClass(string className)
@@ -43,14 +43,14 @@ namespace test_app.Runtime.Nodes.Builders
         // }
         public TemplateBuilder AddEventListener(string eventName, string methodName, params object[] @params)
         {
-            _template.EventHandlers.Add((eventName, methodName, @params));
+            _template.EventHandlers.Add(new EventHandlerData { Event = eventName, ComponentMethodName = methodName, Component = _parentComponent, Params = @params });
 
             return this;
         }
 
         public TemplateBuilder SetCondition(IReactiveProvider<bool> condition)
         {
-            _condition = condition;
+            _template.Condition = condition;
             return this;
         }
 
@@ -82,6 +82,17 @@ namespace test_app.Runtime.Nodes.Builders
 
             return this;
         }
+        public TemplateBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
+            where TComponent : BaseComponent
+        {
+            var childBuilder = new ComponentBuilder<TComponent>(_serviceProvider);
+            if (setupChild != null)
+                setupChild(childBuilder);
+
+            _addChild(childBuilder.Build());
+
+            return this;
+        }
 
         private void _addChild(IPageItem child)
         {
@@ -90,13 +101,10 @@ namespace test_app.Runtime.Nodes.Builders
 
         public IPageItem Build()
         {
-            if (_condition != null)
+            if (_template.Condition != null)
             {
                 var reactiveNode = _serviceProvider.GetService<ReactivePageItem.Builder>()
-                    .Build(_template, _condition, out bool visible);
-
-                if (visible == false)
-                    return new NodeComment(id: _template.EndId);
+                    .Build(_template, _template.Condition, out bool visible);
             }
 
             return _template;

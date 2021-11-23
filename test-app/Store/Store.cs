@@ -12,7 +12,7 @@ namespace test_app.Store
             Message = new ReactiveValue<string>(dependencyManager, "Click?");
             Label = serviceProvider.GetService<ReactiveValueGetter<string, string>.Builder>()
                 .Build(msg => $"{msg} :-)", Message);
-            ShowText = new ReactiveValue<bool>(dependencyManager);
+            ShowText = new ReactiveValue<bool>(dependencyManager, true);
             Hidden = new ReactiveValue<bool>(dependencyManager);
             ShowHideLabel = serviceProvider.GetService<ReactiveValueGetter<bool, string>.Builder>()
                 .Build(visible => visible ? "Hide" : "Show", ShowText);
