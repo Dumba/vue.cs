@@ -22,9 +22,9 @@ namespace test_app.Components
                 .AddChild("input", ch => ch
                     .AddClass("ccc")
                     .AddAttribute("value", _store.Message)
-                    .AddEventListener("keyup", "Test", "ble", "ble"))
+                    .AddEventListener("keyup", "SetMessage"))
                 .AddChild("button", ch => ch
-                    .AddEventListener("click", "Test", "Hello", "hal")
+                    .AddEventListener("click", "Add")
                     .AddText(_store.Label)
                     .AddText("Click? :-)"))
                 .AddChild("button", ch => ch
@@ -33,7 +33,7 @@ namespace test_app.Components
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "ToggleHide2")
                     .AddText("ShowHideLabel - 2"))
-                .AddChildren(_store.List, "span", (ch, i) => ch
+                .AddChildren(_store.List, "button", (ch, i) => ch
                     .AddText(i)
                     .AddEventListener("click", "Remove", i))
                 .AddChild("div", ch => ch
@@ -48,9 +48,25 @@ namespace test_app.Components
         }
 
         [Microsoft.JSInterop.JSInvokable]
-        public void Test(Event ev, string message, string another)
+        public void SetMessage(Event ev)
         {
-            _store.Message.Set(ev.Value is string stringValue && !string.IsNullOrEmpty(stringValue) ? stringValue : message);
+            var message = ev.Value.GetString();
+            if (string.IsNullOrEmpty(message))
+            {
+                System.Console.WriteLine("Empty value");
+                return;
+            }
+
+            _store.Message.Set(message);
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void Add(Event ev)
+        {
+            var message = _store.Message.Get(null);
+            _store.List.Add(message);
+
+            _store.Message.Set("");
         }
 
         [Microsoft.JSInterop.JSInvokable]

@@ -117,6 +117,15 @@ function InsertNode(parentElementId, newNode, nextNodeId = null) {
         console.error(err);
     }
 }
+function InsertNodeBefore(newNode, nextNodeId) {
+    try {
+        const nextNode = _getNode(nextNodeId);
+        _insert(newNode, nextNode.parentElement, nextNode);
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
 function RemoveNode(nodeId) {
     try {
         var node = _getNode(nodeId);

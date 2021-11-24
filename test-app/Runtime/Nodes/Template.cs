@@ -30,7 +30,9 @@ namespace test_app.Runtime.Nodes
         public List<IPageItem> Items { get; }
         public IReactiveProvider<bool> Condition { get; set; }
 
-        public IEnumerable<IPageNode> Nodes => Items.SelectMany(i => i.Nodes);
+        public IEnumerable<IPageNode> Nodes => Items.SelectMany(i => i.Nodes)
+            .Prepend(new NodeComment($" start template {StartId} / {EndId} ", StartId))
+            .Append(new NodeComment($" end template {StartId} / {EndId} ", EndId));
         public bool IsVisible => Condition?.Get(null) != false;
     }
 }

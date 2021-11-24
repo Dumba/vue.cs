@@ -20,7 +20,9 @@ namespace test_app.Runtime.Nodes.Builders
 
         private readonly IServiceProvider _serviceProvider;
         private BaseComponent _parentComponent;
-        private Template _template;        
+        private Template _template;
+
+        public Guid EndId => _template.EndId;
 
         public TemplateBuilder AddClass(string className)
         {
@@ -124,7 +126,7 @@ namespace test_app.Runtime.Nodes.Builders
         {
             var reactivePageMultiItem = _serviceProvider.GetService<ReactivePageMultiItem<TItem>.Builder>()
                 .Build(_parentComponent, tagName, setupChild);
-                
+
             var collectionBuilder = reactivePageMultiItem.Init(collection);
 
             _addChild(collectionBuilder.Build());

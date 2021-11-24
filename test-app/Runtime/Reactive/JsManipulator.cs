@@ -40,9 +40,17 @@ namespace test_app.Runtime.Reactive
                 }
             }
         }
-        public ValueTask InsertNode(IPageNode node, Guid insertBeforeNodeId)
+        public async ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
         {
-            return _js.InvokeVoidAsync("InsertNodeAfter", node, insertBeforeNodeId);
+            await _js.InvokeVoidAsync("InsertNodeBefore", node, insertBeforeNodeId);
+            
+            if (node is NodeElement element)
+            {
+                foreach (var eventHandler in element.EventHandlers)
+                {
+                    await AddEventListener(element.Id, eventHandler.Component, eventHandler.Event, eventHandler.ComponentMethodName, eventHandler.Params);
+                }
+            }
         }
         public ValueTask RemoveNode(Guid nodeId)
         {

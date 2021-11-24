@@ -27,7 +27,7 @@ namespace test_app.Runtime.Reactive.PageItems
         private Action<ElementBuilder, TItem> _setupChild;
         private Dictionary<TItem, IPageItem> _mapping;
 
-        public Guid TemplateId { get; set; }
+        public Guid TemplateEndId { get; set; }
 
         public TemplateBuilder Init(IEnumerable<TItem> initCollection)
         {
@@ -53,6 +53,7 @@ namespace test_app.Runtime.Reactive.PageItems
                 _mapping.Add(item, pageItem);
             }
 
+            TemplateEndId = templateBuilder.EndId;
             return templateBuilder;
         }
 
@@ -66,7 +67,15 @@ namespace test_app.Runtime.Reactive.PageItems
             _mapping.Add(value, pageItem);
             foreach (var node in pageItem.Nodes)
             {
-                await jsManipulator.InsertNode(node, TemplateId);
+                await jsManipulator.InsertNodeBefore(node, TemplateEndId);
+
+                if (node.IsVisible && node is INodeParent element)
+                {
+                    foreach (var child in element.Children)
+                    {
+                        await child.Render(jsManipulator, node.Id);
+                    }
+                }
             }
         }
 
