@@ -51,12 +51,6 @@ namespace test_app.Components
         public void SetMessage(Event ev)
         {
             var message = ev.Value.GetString();
-            if (string.IsNullOrEmpty(message))
-            {
-                System.Console.WriteLine("Empty value");
-                return;
-            }
-
             _store.Message.Set(message);
         }
 
@@ -64,8 +58,13 @@ namespace test_app.Components
         public void Add(Event ev)
         {
             var message = _store.Message.Get(null);
-            _store.List.Add(message);
+            if (string.IsNullOrEmpty(message))
+            {
+                System.Console.WriteLine("Empty value");
+                return;
+            }
 
+            _store.List.Add(message);
             _store.Message.Set("");
         }
 
