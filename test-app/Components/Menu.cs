@@ -20,7 +20,10 @@ namespace test_app.Components
                 .AddChild("ul", ul => ul
                     .AddChild("li", li => li
                         .AddText("Home")
-                        .AddEventListener("click", "MoveTo", "home")))
+                        .AddEventListener("click", "MoveTo", "home"))
+                    .AddChild("li", li => li
+                        .AddText("About")
+                        .AddEventListener("click", "MoveTo", "about")))
                 .AddChild("span", ch => ch
                     .AddText("Hidden Menu")
                     .SetCondition(_store.Hidden)));

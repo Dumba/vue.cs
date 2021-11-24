@@ -50,7 +50,7 @@ namespace test_app.Components
         [Microsoft.JSInterop.JSInvokable]
         public void Test(Event ev, string message, string another)
         {
-            _store.Message.Set(string.IsNullOrEmpty(ev.Value) ? message : ev.Value);
+            _store.Message.Set(ev.Value is string stringValue && !string.IsNullOrEmpty(stringValue) ? stringValue : message);
         }
 
         [Microsoft.JSInterop.JSInvokable]
