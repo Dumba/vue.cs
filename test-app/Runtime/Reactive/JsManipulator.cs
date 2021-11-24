@@ -31,44 +31,22 @@ namespace test_app.Runtime.Reactive
         {
             // Guid.Empty = Master component
             await _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, null);
-
-            if (node is NodeElement element)
-            {
-                foreach (var eventHandler in element.EventHandlers)
-                {
-                    await AddEventListener(element.Id, eventHandler.Component, eventHandler.Event, eventHandler.ComponentMethodName, eventHandler.Params);
-                }
-            }
         }
         public async ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
         {
             await _js.InvokeVoidAsync("InsertNodeBefore", node, insertBeforeNodeId);
-            
-            if (node is NodeElement element)
-            {
-                foreach (var eventHandler in element.EventHandlers)
-                {
-                    await AddEventListener(element.Id, eventHandler.Component, eventHandler.Event, eventHandler.ComponentMethodName, eventHandler.Params);
-                }
-            }
-        }
-        public ValueTask RemoveNode(Guid nodeId)
-        {
-            return _js.InvokeVoidAsync("RemoveNode", nodeId);
         }
         public ValueTask ReplaceNode(IPageNode pageItem)
         {
             return _js.InvokeVoidAsync("ReplaceNode", pageItem.Id, pageItem);
         }
+        public ValueTask RemoveNode(Guid nodeId)
+        {
+            return _js.InvokeVoidAsync("RemoveNode", nodeId);
+        }
         public ValueTask UpdateText(Guid nodeId, string newText)
         {
             return _js.InvokeVoidAsync("UpdateText", nodeId, newText);
-        }
-
-        // events
-        public ValueTask AddEventListener(Guid elementId, BaseComponent component, string eventName, string methodName, params object[] @params)
-        {
-            return _js.InvokeVoidAsync("AddListener", elementId, eventName, component.ThisAsJsInterop, methodName, @params);
         }
     }
 }

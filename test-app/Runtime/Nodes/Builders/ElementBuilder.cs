@@ -44,7 +44,7 @@ namespace test_app.Runtime.Nodes.Builders
         }
         public ElementBuilder AddEventListener(string eventName, string methodName, params object[] @params)
         {
-            _element.EventHandlers.Add(new EventHandlerData { Event = eventName, Component = _parentComponent, ComponentMethodName = methodName, Params = @params });
+            _element.EventHandlers.Add(new EventHandlerData { Event = eventName, ComponentInterop = _parentComponent.ThisAsJsInterop, ComponentMethodName = methodName, Params = @params });
 
             return this;
         }

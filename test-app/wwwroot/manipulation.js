@@ -30,7 +30,7 @@ function _serializeEvent(event)
     }
 }
 
-function _createElement(tagName, id, attributes) {
+function _createElement(tagName, id, attributes, eventHandlers) {
     var element = document.createElement(tagName);
     _getMapping()[id] = element;
 
@@ -38,6 +38,12 @@ function _createElement(tagName, id, attributes) {
         Object.keys(attributes).forEach(key => {
             element.setAttribute(key, attributes[key]);
         });
+    }
+
+    if (eventHandlers?.length) {
+        eventHandlers.forEach(eventHandler => {
+            element[`on${eventHandler.event}`] = (ev) => eventHandler.componentInterop.invokeMethod(eventHandler.componentMethodName, _serializeEvent(ev), ...eventHandler.params);
+        })
     }
     
     return element;
@@ -65,7 +71,7 @@ function _createNode(node) {
         return _createComment(node.content, node.id);
     }
 
-    return _createElement(node.tagName, node.id, node.allAttributes);
+    return _createElement(node.tagName, node.id, node.allAttributes, node.eventHandlers);
 }
 function _insert(newNode, parentElement, nextNode = null) {
     const createdNode = _createNode(newNode);
@@ -154,11 +160,4 @@ function UpdateText(nodeId, newText) {
     catch (err) {
         console.error(err);
     }
-}
-
-// events
-function AddListener(elementId, eventName, eventTarget, methodName, params)
-{
-    var element = _getNode(elementId);
-    element[`on${eventName}`] = (ev) => eventTarget.invokeMethod(methodName, _serializeEvent(ev), ...params);
 }
