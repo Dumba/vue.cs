@@ -22,7 +22,7 @@ namespace test_app.Runtime.Nodes
             {
                 await jsManipulator.InsertNode(parentId, node.IsVisible ? node : new NodeComment(id: node.Id));
 
-                if (node is INodeParent element)
+                if (node.IsVisible && node is INodeParent element)
                 {
                     foreach (var child in element.Children)
                     {

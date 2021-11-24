@@ -10,6 +10,7 @@ namespace test_app.Extensions
             self.AddScoped<Runtime.Reactive.DependencyManager>();
 
             self.AddTransient(typeof(Runtime.Reactive.Data.ReactiveValueGetter<,>.Builder));
+            self.AddTransient(typeof(Runtime.Reactive.PageItems.ReactivePageMultiItem<>.Builder));
             self.AddTransient<Runtime.Reactive.PageItems.ReactiveText.Builder>();
             self.AddTransient<Runtime.Reactive.PageItems.ReactiveAttribute.Builder>();
             self.AddTransient<Runtime.Reactive.PageItems.ReactivePageItem.Builder>();

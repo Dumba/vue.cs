@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
 using test_app.Runtime.Nodes.Models;
+using test_app.Runtime.Reactive.Data;
 using test_app.Runtime.Reactive.Interfaces;
 using test_app.Runtime.Reactive.PageItems;
 
@@ -99,33 +101,31 @@ namespace test_app.Runtime.Nodes.Builders
             _element.Children.Add(child);
         }
 
-        // public ElementBuilder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
-        // {
-        //     foreach (var item in collection)
-        //     {
-        //         var childBuilder = new ElementBuilder(_dependencyManager, _jsManipulator, _parentComponent, _element.Id, tagName);
-        //         if (setupChild != null)
-        //             setupChild(childBuilder, item);
+        public ElementBuilder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
+        {
+            var templateBuilder = new TemplateBuilder(_serviceProvider, _parentComponent);
 
-        //         _childBuilders.Add(childBuilder);
-        //     }
+            foreach (var item in collection)
+            {
+                templateBuilder.AddChild(tagName, builder => setupChild(builder, item));
+            }
 
-        //     return this;
-        // }
+            _addChild(templateBuilder.Build());
 
-        // public ElementBuilder AddChildren<TItem>(ReactiveList<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
-        // {
-        //     foreach (var item in collection)
-        //     {
-        //         var childBuilder = new ElementBuilder(_dependencyManager, _jsManipulator, _parentComponent, _element.Id, tagName);
-        //         if (setupChild != null)
-        //             setupChild(childBuilder, item);
+            return this;
+        }
 
-        //         _childBuilders.Add(childBuilder);
-        //     }
+        public ElementBuilder AddChildren<TItem>(ReactiveCollection<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
+        {
+            var reactivePageMultiItem = _serviceProvider.GetService<ReactivePageMultiItem<TItem>.Builder>()
+                .Build(_parentComponent, tagName, setupChild);
+                
+            var collectionBuilder = reactivePageMultiItem.Init(collection);
 
-        //     return this;
-        // }
+            _addChild(collectionBuilder.Build());
+
+            return this;
+        }
 
         public IPageItem Build()
         {

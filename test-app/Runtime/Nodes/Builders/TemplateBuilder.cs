@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
 using test_app.Runtime.Nodes.Models;
+using test_app.Runtime.Reactive.Data;
 using test_app.Runtime.Reactive.Interfaces;
 using test_app.Runtime.Reactive.PageItems;
 
@@ -18,8 +20,7 @@ namespace test_app.Runtime.Nodes.Builders
 
         private readonly IServiceProvider _serviceProvider;
         private BaseComponent _parentComponent;
-        private Template _template;
-        
+        private Template _template;        
 
         public TemplateBuilder AddClass(string className)
         {
@@ -82,6 +83,17 @@ namespace test_app.Runtime.Nodes.Builders
 
             return this;
         }
+        public TemplateBuilder AddChild(string tagName, Action<ElementBuilder> setupChild, out IPageItem child)
+        {
+            var childBuilder = new ElementBuilder(_serviceProvider, _parentComponent, tagName);
+            if (setupChild != null)
+                setupChild(childBuilder);
+
+            child = childBuilder.Build();
+            _addChild(child);
+
+            return this;
+        }
         public TemplateBuilder AddChild<TComponent>(Action<ComponentBuilder<TComponent>> setupChild = null)
             where TComponent : BaseComponent
         {
@@ -90,6 +102,32 @@ namespace test_app.Runtime.Nodes.Builders
                 setupChild(childBuilder);
 
             _addChild(childBuilder.Build());
+
+            return this;
+        }
+
+        public TemplateBuilder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
+        {
+            var templateBuilder = new TemplateBuilder(_serviceProvider, _parentComponent);
+
+            foreach (var item in collection)
+            {
+                templateBuilder.AddChild(tagName, builder => setupChild(builder, item));
+            }
+
+            _addChild(templateBuilder.Build());
+
+            return this;
+        }
+
+        public TemplateBuilder AddChildren<TItem>(ReactiveCollection<TItem> collection, string tagName, Action<ElementBuilder, TItem> setupChild = null)
+        {
+            var reactivePageMultiItem = _serviceProvider.GetService<ReactivePageMultiItem<TItem>.Builder>()
+                .Build(_parentComponent, tagName, setupChild);
+                
+            var collectionBuilder = reactivePageMultiItem.Init(collection);
+
+            _addChild(collectionBuilder.Build());
 
             return this;
         }

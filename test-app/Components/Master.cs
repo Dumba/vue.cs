@@ -33,9 +33,9 @@ namespace test_app.Components
                 .AddChild("button", ch => ch
                     .AddEventListener("click", "ToggleHide2")
                     .AddText("ShowHideLabel - 2"))
-                // .AddChildren(_store.List, "span", (ch, i) => ch
-                //     .AddText(i)
-                //     .AddEventListener("click", "Remove", i))
+                .AddChildren(_store.List, "span", (ch, i) => ch
+                    .AddText(i)
+                    .AddEventListener("click", "Remove", i))
                 .AddChild("div", ch => ch
                     .SetCondition(_store.ShowText)
                     .AddText("Vidíš mě?"))
@@ -65,10 +65,10 @@ namespace test_app.Components
             _store.Hidden.Set(!_store.Hidden.Get(null));
         }
 
-        // [Microsoft.JSInterop.JSInvokable]
-        // public void Remove(Event ev, string item)
-        // {
-        //     _store.List.Remove(item);
-        // }
+        [Microsoft.JSInterop.JSInvokable]
+        public void Remove(Event ev, string item)
+        {
+            _store.List.Remove(item);
+        }
     }
 }
