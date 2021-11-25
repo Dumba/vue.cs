@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using test_app.Base;
 using test_app.Runtime.Nodes.Interfaces;
-using test_app.Runtime.Nodes.Builders;
 using test_app.Runtime.Reactive.Data;
 using test_app.Runtime.Reactive.Interfaces;
+using test_app.Runtime.Nodes;
+using PageItemBuilder = test_app.Runtime.Nodes.Builders.Builder;
+using test_app.Runtime.Nodes.Builders;
 
 namespace test_app.Runtime.Reactive.PageItems
 {
     public class ReactivePageMultiItem<TItem> : IReactiveCollectionConsumer<TItem>
     {
-        public ReactivePageMultiItem(IServiceProvider serviceProvider, BaseComponent parentComponent, string tagName, Action<ElementBuilder, TItem> setupChild)
+        public ReactivePageMultiItem(IServiceProvider serviceProvider, BaseComponent parentComponent, string tagName, Action<PageItemBuilder, TItem> setupChild)
         {
             _serviceProvider = serviceProvider;
             _parentComponent = parentComponent;
@@ -24,12 +27,12 @@ namespace test_app.Runtime.Reactive.PageItems
         private readonly IServiceProvider _serviceProvider;
         private BaseComponent _parentComponent;
         private string _tagName;
-        private Action<ElementBuilder, TItem> _setupChild;
+        private Action<PageItemBuilder, TItem> _setupChild;
         private Dictionary<TItem, IPageItem> _mapping;
 
         public Guid TemplateEndId { get; set; }
 
-        public TemplateBuilder Init(IEnumerable<TItem> initCollection)
+        public PageItemBuilder Init(IEnumerable<TItem> initCollection)
         {
             var templateBuilder = new TemplateBuilder(_serviceProvider, _parentComponent);
 
@@ -42,7 +45,7 @@ namespace test_app.Runtime.Reactive.PageItems
 
             return templateBuilder;
         }
-        public TemplateBuilder Init(ReactiveCollection<TItem> initCollection)
+        public PageItemBuilder Init(ReactiveCollection<TItem> initCollection)
         {
             var templateBuilder = new TemplateBuilder(_serviceProvider, _parentComponent);
 
@@ -53,14 +56,14 @@ namespace test_app.Runtime.Reactive.PageItems
                 _mapping.Add(item, pageItem);
             }
 
-            TemplateEndId = templateBuilder.EndId;
+            TemplateEndId = templateBuilder.EndNode.Id;
             return templateBuilder;
         }
 
         public async ValueTask Added(TItem value)
         {
             var jsManipulator = _serviceProvider.GetService<JsManipulator>();
-            var builder = new ElementBuilder(_serviceProvider, _parentComponent, _tagName);
+            var builder = new PageItemBuilder(_serviceProvider, _parentComponent, _tagName);
             _setupChild(builder, value);
             var pageItem = builder.Build();
 
@@ -100,7 +103,7 @@ namespace test_app.Runtime.Reactive.PageItems
 
             private IServiceProvider _serviceProvider;
 
-            public ReactivePageMultiItem<TItem> Build(BaseComponent parentComponent, string tagName, Action<ElementBuilder, TItem> setupChild)
+            public ReactivePageMultiItem<TItem> Build(BaseComponent parentComponent, string tagName, Action<PageItemBuilder, TItem> setupChild)
             {
                 return new ReactivePageMultiItem<TItem>(_serviceProvider, parentComponent, tagName, setupChild);
             }

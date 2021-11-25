@@ -1,32 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using test_app.Runtime.Nodes.Interfaces;
 using test_app.Runtime.Nodes.Models;
 using test_app.Runtime.Reactive.Interfaces;
+using test_app.Runtime.Reactive.PageItems;
 
 namespace test_app.Runtime.Nodes
 {
-    public class NodeElement : IPageNode, INodeParent, IPageItemWithAttrs
+    public class NodeElement : IPageNode, INodeParent, IPageItemBuild
     {
-        public NodeElement(string tagName)
+        public NodeElement(string tagName, Guid? id = null)
         {
-            Id = Guid.NewGuid();
+            Id = id ?? Guid.NewGuid();
             TagName = tagName;
             Classes = new List<string>();
             Attributes = new Dictionary<string, string>();
-            Styles = new Dictionary<string, string>();
-            EventHandlers = new List<EventHandlerData>();
+            EventHandlers = new HashSet<EventHandlerData>();
 
             Children = new List<IPageItem>();
         }
 
         public Guid Id { get; }
         public string TagName { get; }
-        public List<string> Classes { get; }
-        public Dictionary<string, string> Attributes { get; }
-        public Dictionary<string, string> Styles { get; }
-        public List<EventHandlerData> EventHandlers { get; }
+        [JsonIgnore]
+        public List<string> Classes { get; set; }
+        [JsonIgnore]
+        public Dictionary<string, string> Attributes { get; set; }
+        public HashSet<EventHandlerData> EventHandlers { get; set; }
 
         public Dictionary<string, string> AllAttributes
         {
@@ -35,17 +38,31 @@ namespace test_app.Runtime.Nodes
                 var result = Attributes.ToDictionary(pair => pair.Key, pair => pair.Value);
                 if (Classes.Any())
                     result.Add("class", string.Join(" ", Classes));
-                if (Styles.Any())
-                    result.Add("style", string.Join("", Styles.Select(pair => $"{pair.Key}:{pair.Value};")));
+                // if (Styles.Any())
+                //     result.Add("style", string.Join("", Styles.Select(pair => $"{pair.Key}:{pair.Value};")));
 
                 return result;
             }
         }
 
-        public List<IPageItem> Children { get; }
+        [JsonIgnore]
+        public List<IPageItem> Children { get; set; }
+        [JsonIgnore]
         public IReactiveProvider<bool> Condition { get; set; }
 
+        [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
-        public bool IsVisible => Condition?.Get(null) != false;
+        [JsonIgnore]
+        public List<IPageItem> InnerNodes { get => Children; set => Children = value; }
+        [JsonIgnore]
+        public bool IsVisible => Condition?.Get(null) ?? true;
+
+        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
+        {
+            var reactiveAttribute = serviceProvider.GetService<ReactiveAttribute.Builder>()
+                .Build(Id, attributeName, valueProvider, out var text);
+
+            Attributes.Add(attributeName, text);
+        }
     }
 }

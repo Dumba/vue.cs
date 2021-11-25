@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using test_app.Base;
 using test_app.Runtime.Nodes.Builders;
+using test_app.Runtime.Nodes.Interfaces;
 
 namespace test_app.Components
 {
@@ -13,7 +15,7 @@ namespace test_app.Components
 
         private readonly Store.Store _store;
 
-        public override void Setup(TemplateBuilder builder)
+        public override void Setup(Builder builder, IEnumerable<IPageItem> childNodes = null)
         {
             builder.AddChild("menu", menu => menu
                 .AddClass("main")

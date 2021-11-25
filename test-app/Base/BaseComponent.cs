@@ -5,6 +5,7 @@ using Microsoft.JSInterop;
 using test_app.Runtime.Nodes.Interfaces;
 using test_app.Runtime.Nodes.Builders;
 using test_app.Runtime.Reactive;
+using System.Collections.Generic;
 
 namespace test_app.Base
 {
@@ -43,7 +44,7 @@ namespace test_app.Base
                 .Render(jsManipulator, parentId);
         }
 
-        public abstract void Setup(TemplateBuilder builder);
+        public abstract void Setup(Builder builder, IEnumerable<IPageItem> childNodes = null);
 
         public void Dispose()
         {

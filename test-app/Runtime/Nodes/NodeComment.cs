@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using test_app.Runtime.Nodes.Interfaces;
 
 namespace test_app.Runtime.Nodes
@@ -15,7 +16,9 @@ namespace test_app.Runtime.Nodes
         public Guid Id { get; }
         public string Content { get; }
 
+        [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
+        [JsonIgnore]
         public bool IsVisible => true;
     }
 }

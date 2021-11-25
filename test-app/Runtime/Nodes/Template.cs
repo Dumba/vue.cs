@@ -7,33 +7,43 @@ using test_app.Runtime.Reactive.Interfaces;
 
 namespace test_app.Runtime.Nodes
 {
-    public class Template : IPageMultiItem, IPageItemWithAttrs
+    public class Template : IPageItemBuild
     {
-        public Template()
+        public Template(NodeComment startNode, NodeComment endNode)
         {
-            StartId = Guid.NewGuid();
-            EndId = Guid.NewGuid();
+            StartNode = startNode;
+            EndNode = endNode;
             Classes = new List<string>();
             Attributes = new Dictionary<string, string>();
-            Styles = new Dictionary<string, string>();
-            EventHandlers = new List<EventHandlerData>();
+            EventHandlers = new HashSet<EventHandlerData>();
 
-            Items = new List<IPageItem>();
+            InnerNodes = new List<IPageItem>();
         }
 
-        public Guid StartId { get; }
-        public Guid EndId { get; }
-        public List<string> Classes { get; }
-        public Dictionary<string, string> Attributes { get; }
-        public Dictionary<string, string> Styles { get; }
-        public List<EventHandlerData> EventHandlers { get; }
+        public NodeComment StartNode { get; }
+        public NodeComment EndNode { get; }
+        public List<string> Classes { get; set; }
+        public Dictionary<string, string> Attributes { get; set; }
+        public HashSet<EventHandlerData> EventHandlers { get; set; }
 
-        public List<IPageItem> Items { get; }
+        public List<IPageItem> InnerNodes { get; set; }
         public IReactiveProvider<bool> Condition { get; set; }
 
-        public IEnumerable<IPageNode> Nodes => Items.SelectMany(i => i.Nodes)
-            .Prepend(new NodeComment($" start template {StartId} / {EndId} ", StartId))
-            .Append(new NodeComment($" end template {StartId} / {EndId} ", EndId));
-        public bool IsVisible => Condition?.Get(null) != false;
+        public IEnumerable<IPageNode> Nodes => InnerNodes.SelectMany(i => i.Nodes)
+            .Prepend(StartNode)
+            .Append(EndNode);
+        public bool IsVisible => Condition?.Get(null) ?? true;
+
+
+        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
+        {
+            foreach (var item in InnerNodes)
+            {
+                if (item is IPageItemBuild pageItem)
+                {
+                    pageItem.AddReactiveAttribute(serviceProvider, attributeName, valueProvider);
+                }
+            }
+        }
     }
 }

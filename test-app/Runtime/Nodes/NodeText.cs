@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using test_app.Runtime.Nodes.Interfaces;
-using test_app.Runtime.Reactive.Interfaces;
 
 namespace test_app.Runtime.Nodes
 {
@@ -15,9 +15,10 @@ namespace test_app.Runtime.Nodes
 
         public Guid Id { get; }
         public string Text { get; }
-        public IReactiveProvider<bool> Condition { get; set; }
 
+        [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
-        public bool IsVisible => Condition?.Get(null) != false;
+        [JsonIgnore]
+        public bool IsVisible => true;
     }
 }
