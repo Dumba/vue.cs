@@ -57,6 +57,18 @@ namespace test_app.Runtime.Nodes
         [JsonIgnore]
         public bool IsVisible => Condition?.Get(null) ?? true;
 
+        public void AddClass(string className)
+        {
+            Classes.Add(className);
+        }
+        public void AddAttribute(KeyValuePair<string, string> attribute)
+        {
+            Attributes[attribute.Key] = attribute.Value;
+        }
+        public void AddEventHandler(EventHandlerData eventHandler)
+        {
+            EventHandlers.Add(eventHandler);
+        }
         public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
         {
             var reactiveAttribute = serviceProvider.GetService<ReactiveAttribute.Builder>()

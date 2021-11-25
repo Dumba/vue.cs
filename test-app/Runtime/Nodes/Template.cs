@@ -13,18 +13,12 @@ namespace test_app.Runtime.Nodes
         {
             StartNode = startNode;
             EndNode = endNode;
-            Classes = new List<string>();
-            Attributes = new Dictionary<string, string>();
-            EventHandlers = new HashSet<EventHandlerData>();
 
             InnerNodes = new List<IPageItem>();
         }
 
         public NodeComment StartNode { get; }
         public NodeComment EndNode { get; }
-        public List<string> Classes { get; set; }
-        public Dictionary<string, string> Attributes { get; set; }
-        public HashSet<EventHandlerData> EventHandlers { get; set; }
 
         public List<IPageItem> InnerNodes { get; set; }
         public IReactiveProvider<bool> Condition { get; set; }
@@ -34,7 +28,36 @@ namespace test_app.Runtime.Nodes
             .Append(EndNode);
         public bool IsVisible => Condition?.Get(null) ?? true;
 
-
+        public void AddClass(string className)
+        {
+            foreach (var node in InnerNodes)
+            {
+                if (node is IPageItemBuild element)
+                {
+                    element.AddClass(className);
+                }
+            }
+        }
+        public void AddAttribute(KeyValuePair<string, string> attribute)
+        {
+            foreach (var node in InnerNodes)
+            {
+                if (node is IPageItemBuild element)
+                {
+                    element.AddAttribute(attribute);
+                }
+            }
+        }
+        public void AddEventHandler(EventHandlerData eventHandler)
+        {
+            foreach (var node in InnerNodes)
+            {
+                if (node is IPageItemBuild element)
+                {
+                    element.AddEventHandler(eventHandler);
+                }
+            }
+        }
         public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
         {
             foreach (var item in InnerNodes)

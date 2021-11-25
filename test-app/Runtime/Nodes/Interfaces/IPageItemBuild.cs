@@ -7,13 +7,12 @@ namespace test_app.Runtime.Nodes.Interfaces
 {
     public interface IPageItemBuild : IPageItem
     {
-        List<string> Classes { get; set; }
-        Dictionary<string, string> Attributes { get; set; }
-        HashSet<EventHandlerData> EventHandlers { get; set; }
-        IReactiveProvider<bool> Condition { get; set; }
+        List<IPageItem> InnerNodes { set; }
+        IReactiveProvider<bool> Condition { set; }
         
-        List<IPageItem> InnerNodes { get; set; }
-
+        void AddClass(string className);
+        void AddAttribute(KeyValuePair<string, string> attribute);
+        void AddEventHandler(EventHandlerData eventHandler);
         void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider);
     }
 }

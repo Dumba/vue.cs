@@ -203,15 +203,23 @@ namespace test_app.Runtime.Nodes.Builders
             pageItem.InnerNodes = _children;
 
             // node data
-            pageItem.Classes = _classes;
-            pageItem.Attributes = _attributes;
-            pageItem.EventHandlers = _eventHandlers;
-            pageItem.Condition = _condition;
-
+            foreach (var className in _classes)
+            {
+                pageItem.AddClass(className);
+            }
+            foreach (var attribute in _attributes)
+            {
+                pageItem.AddAttribute(attribute);
+            }
             foreach (var reactiveAttribute in _reactiveAttributes)
             {
                 pageItem.AddReactiveAttribute(_serviceProvider, reactiveAttribute.Key, reactiveAttribute.Value);
             }
+            foreach (var eventHandler in _eventHandlers)
+            {
+                pageItem.AddEventHandler(eventHandler);
+            }
+            pageItem.Condition = _condition;
 
             if (_condition is not null)
             {
