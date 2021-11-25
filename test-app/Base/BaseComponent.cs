@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
-using test_app.Runtime.Nodes;
+using test_app.Runtime.Nodes.Interfaces;
 using test_app.Runtime.Nodes.Builders;
 using test_app.Runtime.Reactive;
 

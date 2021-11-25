@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using test_app.Runtime.Reactive;
 
-namespace test_app.Runtime.Nodes
+namespace test_app.Runtime.Nodes.Interfaces
 {
     public interface IPageItem
     {

@@ -2,8 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
-using test_app.Base;
-using test_app.Runtime.Nodes;
+using test_app.Runtime.Nodes.Interfaces;
 
 namespace test_app.Runtime.Reactive
 {
@@ -27,14 +26,14 @@ namespace test_app.Runtime.Reactive
         }
 
         // nodes
-        public async ValueTask InsertNode(Guid parentElementId, IPageNode node)
+        public ValueTask InsertNode(Guid parentElementId, IPageNode node)
         {
             // Guid.Empty = Master component
-            await _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, null);
+            return _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, null);
         }
-        public async ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
+        public ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
         {
-            await _js.InvokeVoidAsync("InsertNodeBefore", node, insertBeforeNodeId);
+            return _js.InvokeVoidAsync("InsertNodeBefore", node, insertBeforeNodeId);
         }
         public ValueTask ReplaceNode(IPageNode pageItem)
         {

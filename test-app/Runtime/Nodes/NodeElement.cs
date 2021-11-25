@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using test_app.Runtime.Nodes.Interfaces;
 using test_app.Runtime.Nodes.Models;
 using test_app.Runtime.Reactive.Interfaces;
 
 namespace test_app.Runtime.Nodes
 {
-    public class NodeElement : IPageNode, INodeParent
+    public class NodeElement : IPageNode, INodeParent, IPageItemWithAttrs
     {
         public NodeElement(string tagName)
         {
