@@ -36,7 +36,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 }
             }
         }
-        public void AddAttribute(KeyValuePair<string, string> attribute)
+        public void AddAttribute(KeyValuePair<string, string?> attribute)
         {
             foreach (var node in InnerNodes)
             {
@@ -56,7 +56,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 }
             }
         }
-        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
+        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string?> valueProvider)
         {
             foreach (var item in InnerNodes)
             {

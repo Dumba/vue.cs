@@ -4,7 +4,7 @@ using Vue.cs.Framework.Runtime.Reactive.Interfaces;
 
 namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 {
-    public class ReactiveText : IReactiveConsumer<string>
+    public class ReactiveText : IReactiveConsumer<string?>
     {
         public ReactiveText(JsManipulator jsManipulator, Guid pageItemId)
         {
@@ -31,7 +31,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private readonly JsManipulator _jsManipulator;
 
-            public ReactiveText Build(Guid pageItemId, IReactiveProvider<string> valueProvider, out string? initValue)
+            public ReactiveText Build(Guid pageItemId, IReactiveProvider<string?> valueProvider, out string? initValue)
             {
                 var reactiveText = new ReactiveText(_jsManipulator, pageItemId);
                 initValue = valueProvider.Get(reactiveText);

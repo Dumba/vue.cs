@@ -63,7 +63,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         {
             Classes.Add(className);
         }
-        public void AddAttribute(KeyValuePair<string, string> attribute)
+        public void AddAttribute(KeyValuePair<string, string?> attribute)
         {
             Attributes[attribute.Key] = attribute.Value;
         }
@@ -71,7 +71,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         {
             EventHandlers.Add(eventHandler);
         }
-        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
+        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string?> valueProvider)
         {
             var reactiveAttribute = serviceProvider.Get<ReactiveAttribute.Builder>()
                 .Build(Id, attributeName, valueProvider, out var text);
@@ -88,6 +88,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
             if (!Conditions.Any())
                 return;
 
+            #warning TODO: mix multiple conditions
             if (Conditions.Count() > 1)
                 Console.WriteLine("hoops");
 

@@ -19,8 +19,8 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             _tagName = tagName;
             _classes = new List<string>();
-            _attributes = new Dictionary<string, string>();
-            _reactiveAttributes = new Dictionary<string, IReactiveProvider<string>>();
+            _attributes = new Dictionary<string, string?>();
+            _reactiveAttributes = new Dictionary<string, IReactiveProvider<string?>>();
             _eventHandlers = new HashSet<EventHandlerData>();
             _conditions = new HashSet<IReactiveProvider<bool>>();
 
@@ -32,8 +32,8 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
         private string _tagName;
         private List<string> _classes;
-        private Dictionary<string, string> _attributes;
-        private Dictionary<string, IReactiveProvider<string>> _reactiveAttributes;
+        private Dictionary<string, string?> _attributes;
+        private Dictionary<string, IReactiveProvider<string?>> _reactiveAttributes;
         private HashSet<EventHandlerData> _eventHandlers;
         private HashSet<IReactiveProvider<bool>> _conditions;
         private List<IPageItem> _children;
@@ -51,7 +51,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             return this;
         }
-        public Builder AddAttribute(string name, IReactiveProvider<string> valueProvider)
+        public Builder AddAttribute(string name, IReactiveProvider<string?> valueProvider)
         {
             _reactiveAttributes.Add(name, valueProvider);
 
@@ -82,12 +82,12 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             return this;
         }
-        public Builder AddText(IReactiveProvider<string> textProvider)
+        public Builder AddText(IReactiveProvider<string?> textProvider)
         {
             var id = Guid.NewGuid();
             var reactiveText = _serviceProvider.Get<ReactiveText.Builder>()
-                .Build(id, textProvider, out var text);
-            var child = new NodeText(text, id);
+                .Build(id, textProvider, out var _);
+            var child = new NodeText(textProvider, id);
 
             _addChild(child);
 
