@@ -33,10 +33,11 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private readonly JsManipulator _jsManipulator;
 
-            public ReactiveAttribute Build(Guid pageItemId, string attributeName, IReactiveProvider<string?> valueProvider, out string? initValue)
+            public ReactiveAttribute Build(Guid pageItemId, string attributeName, IReactiveProvider<string?> valueProvider)
             {
                 var reactiveAttribute = new ReactiveAttribute(_jsManipulator, pageItemId, attributeName);
-                initValue = valueProvider.Get(reactiveAttribute);
+                valueProvider.Register(reactiveAttribute);
+                
                 return reactiveAttribute;
             }
         }

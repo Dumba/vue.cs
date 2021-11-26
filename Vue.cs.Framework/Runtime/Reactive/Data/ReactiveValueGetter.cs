@@ -10,27 +10,25 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
         {
             _dependencyManager = dependencyManager;
             _getter = getter;
-            var valueIn = valueProvider.Get(this);
-            _value = _getter(valueIn);
+            Value = _getter(valueProvider.Value);
         }
 
         private readonly DependencyManager _dependencyManager;
-
         private Func<TIn?, TOut?> _getter;
-        private TOut? _value;
-        public TOut? Get(IReactiveConsumer<TOut>? consumer)
-        {
-            if (consumer is not null)
-                _dependencyManager.RegisterDependency(consumer, this);
 
-            return _value;
-        }
+        public TOut? Value { get; private set; }
+
         public ValueTask Changed(TIn? oldValue, TIn? newValue)
         {
-            var oldOutValue = _value;
-            _value = _getter(newValue);
+            var oldOutValue = Value;
+            Value = _getter(newValue);
 
-            return _dependencyManager.ValueChanged(this, oldOutValue, _value);
+            return _dependencyManager.ValueChanged(this, oldOutValue, Value);
+        }
+
+        public void Register(IReactiveConsumer<TOut> consumer)
+        {
+            _dependencyManager.RegisterDependency(consumer, this);
         }
 
         public class Builder

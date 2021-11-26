@@ -56,10 +56,10 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private readonly JsManipulator _jsManipulator;
 
-            public ReactivePageItem Build(IPageItem pageItem, IReactiveProvider<bool> valueProvider, out bool initValue)
+            public ReactivePageItem Build(IPageItem pageItem, IReactiveProvider<bool> valueProvider)
             {
                 var reactivePageItem = new ReactivePageItem(_jsManipulator, pageItem);
-                initValue = valueProvider.Get(reactivePageItem);
+                valueProvider.Register(reactivePageItem);
                 return reactivePageItem;
             }
         }

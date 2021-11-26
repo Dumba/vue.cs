@@ -8,24 +8,23 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
         public ReactiveValue(DependencyManager dependencyManager, TValue? value = default)
         {
             _dependencyManager = dependencyManager;
-            _value = value;
+            Value = value;
         }
 
         private readonly DependencyManager _dependencyManager;
 
-        private TValue? _value;
-        public TValue? Get(IReactiveConsumer<TValue>? consumer)
-        {
-            if (consumer is not null)
-                _dependencyManager.RegisterDependency(consumer, this);
-                
-            return _value;
-        }
+        public TValue? Value { get; private set; }
+
         public ValueTask Set(TValue value)
         {
-            var oldValue = _value;
-            _value = value;
-            return _dependencyManager.ValueChanged(this, oldValue, value);
+            var oldValue = Value;
+            Value = value;
+            return _dependencyManager.ValueChanged(this, oldValue, Value);
+        }
+
+        public void Register(IReactiveConsumer<TValue> consumer)
+        {
+            _dependencyManager.RegisterDependency(consumer, this);
         }
     }
 }

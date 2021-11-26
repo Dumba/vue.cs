@@ -15,15 +15,10 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
         }
 
         private readonly DependencyManager _dependencyManager;
-
         private Func<TItemIn, TItemOut> _getter;
         private List<TItemOut> _list;
 
-        public IEnumerable<TItemOut> Get(IReactiveCollectionConsumer<TItemOut> consumer)
-        {
-            _dependencyManager.RegisterDependency(consumer, this);
-            return _list;
-        }
+        public IEnumerable<TItemOut> Value => _list;
 
         public ValueTask Added(TItemIn value)
         {
@@ -36,6 +31,11 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
             var outValue = _getter(value);
             _list.Remove(outValue);
             return _dependencyManager.ValueRemoved(this, outValue);
+        }
+
+        public void Register(IReactiveCollectionConsumer<TItemOut> consumer)
+        {
+            _dependencyManager.RegisterDependency(consumer, this);
         }
     }
 }

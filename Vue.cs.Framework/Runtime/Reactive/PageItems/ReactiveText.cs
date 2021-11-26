@@ -31,10 +31,10 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private readonly JsManipulator _jsManipulator;
 
-            public ReactiveText Build(Guid pageItemId, IReactiveProvider<string?> valueProvider, out string? initValue)
+            public ReactiveText Build(Guid pageItemId, IReactiveProvider<string?> valueProvider)
             {
                 var reactiveText = new ReactiveText(_jsManipulator, pageItemId);
-                initValue = valueProvider.Get(reactiveText);
+                valueProvider.Register(reactiveText);
                 return reactiveText;
             }
         }

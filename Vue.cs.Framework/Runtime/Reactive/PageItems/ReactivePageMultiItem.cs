@@ -52,7 +52,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
         {
             var templateBuilder = new TemplateBuilder(_serviceProvider, _parentComponent);
 
-            foreach (var item in initCollection.Get(this))
+            foreach (var item in initCollection.Value)
             {
                 templateBuilder.AddChild(
                     _tagName,

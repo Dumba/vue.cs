@@ -57,7 +57,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         [JsonIgnore]
         public List<IPageItem> InnerNodes { get => Children; set => Children = value; }
         [JsonIgnore]
-        public bool IsVisible => _finalCondition?.Get(null) ?? true;
+        public bool IsVisible => _finalCondition?.Value ?? true;
 
         public void AddClass(string className)
         {
@@ -74,9 +74,9 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string?> valueProvider)
         {
             var reactiveAttribute = serviceProvider.Get<ReactiveAttribute.Builder>()
-                .Build(Id, attributeName, valueProvider, out var text);
+                .Build(Id, attributeName, valueProvider);
 
-            Attributes.Add(attributeName, text);
+            Attributes.Add(attributeName, valueProvider.Value);
         }
         public void AddCondition(IReactiveProvider<bool> condition)
         {
@@ -95,7 +95,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
             _finalCondition = Conditions.First();
 
             serviceProvider.Get<ReactivePageItem.Builder>()
-                .Build(this, _finalCondition, out _);
+                .Build(this, _finalCondition);
         }
     }
 }

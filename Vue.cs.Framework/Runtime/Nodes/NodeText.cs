@@ -23,7 +23,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         private IReactiveProvider<string?>? _reactiveText;
 
         public Guid Id { get; }
-        public string? Text => _reactiveText is not null ? _reactiveText.Get(null) : _text;
+        public string? Text => _reactiveText is not null ? _reactiveText.Value : _text;
 
         [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
