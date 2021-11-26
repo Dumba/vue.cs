@@ -36,7 +36,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 }
             }
         }
-        public void AddAttribute(KeyValuePair<string, string?> attribute)
+        public void AddAttribute(Attribute attribute)
         {
             foreach (var node in InnerNodes)
             {
@@ -53,16 +53,6 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 if (node is IPageItemBuild element)
                 {
                     element.AddEventHandler(eventHandler);
-                }
-            }
-        }
-        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string?> valueProvider)
-        {
-            foreach (var item in InnerNodes)
-            {
-                if (item is IPageItemBuild pageItem)
-                {
-                    pageItem.AddReactiveAttribute(serviceProvider, attributeName, valueProvider);
                 }
             }
         }

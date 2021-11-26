@@ -19,8 +19,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             _tagName = tagName;
             _classes = new List<string>();
-            _attributes = new Dictionary<string, string?>();
-            _reactiveAttributes = new Dictionary<string, IReactiveProvider<string?>>();
+            _attributes = new HashSet<Attribute>();
             _eventHandlers = new HashSet<EventHandlerData>();
             _conditions = new HashSet<IReactiveProvider<bool>>();
 
@@ -32,8 +31,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
         private string _tagName;
         private List<string> _classes;
-        private Dictionary<string, string?> _attributes;
-        private Dictionary<string, IReactiveProvider<string?>> _reactiveAttributes;
+        private HashSet<Attribute> _attributes;
         private HashSet<EventHandlerData> _eventHandlers;
         private HashSet<IReactiveProvider<bool>> _conditions;
         private List<IPageItem> _children;
@@ -47,13 +45,13 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         }
         public Builder AddAttribute(string name, string value)
         {
-            _attributes.Add(name, value);
+            _attributes.Add(new Attribute(name, value));
 
             return this;
         }
         public Builder AddAttribute(string name, IReactiveProvider<string?> valueProvider)
         {
-            _reactiveAttributes.Add(name, valueProvider);
+            _attributes.Add(new Attribute(name, valueProvider));
 
             return this;
         }
@@ -175,11 +173,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             // attributes
             foreach (var attribute in builder._attributes)
             {
-                _attributes[attribute.Key] = attribute.Value;
-            }
-            foreach (var rAttribute in builder._reactiveAttributes)
-            {
-                _reactiveAttributes[rAttribute.Key] = rAttribute.Value;
+                _attributes.Add(attribute);
             }
 
             // event handlers
@@ -211,10 +205,6 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             foreach (var attribute in _attributes)
             {
                 pageItem.AddAttribute(attribute);
-            }
-            foreach (var reactiveAttribute in _reactiveAttributes)
-            {
-                pageItem.AddReactiveAttribute(_serviceProvider, reactiveAttribute.Key, reactiveAttribute.Value);
             }
             foreach (var eventHandler in _eventHandlers)
             {

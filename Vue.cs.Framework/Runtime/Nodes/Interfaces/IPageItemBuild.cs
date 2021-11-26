@@ -10,9 +10,8 @@ namespace Vue.cs.Framework.Runtime.Nodes.Interfaces
         List<IPageItem> InnerNodes { set; }
         
         void AddClass(string className);
-        void AddAttribute(KeyValuePair<string, string?> attribute);
+        void AddAttribute(Attribute attribute);
         void AddEventHandler(EventHandlerData eventHandler);
-        void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string?> valueProvider);
         void AddCondition(IReactiveProvider<bool> condition);
 
         void BuildCondition(IServiceProvider serviceProvider);

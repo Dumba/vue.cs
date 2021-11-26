@@ -17,7 +17,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
             Id = id ?? Guid.NewGuid();
             TagName = tagName;
             Classes = new List<string>();
-            Attributes = new Dictionary<string, string?>();
+            Attributes = new HashSet<Attribute>();
             EventHandlers = new HashSet<EventHandlerData>();
             Conditions = new HashSet<IReactiveProvider<bool>>();
 
@@ -29,14 +29,14 @@ namespace Vue.cs.Framework.Runtime.Nodes
         [JsonIgnore]
         public List<string> Classes { get; set; }
         [JsonIgnore]
-        public Dictionary<string, string?> Attributes { get; set; }
+        public HashSet<Attribute> Attributes { get; set; }
         public HashSet<EventHandlerData> EventHandlers { get; set; }
 
         public Dictionary<string, string?> AllAttributes
         {
             get
             {
-                var result = Attributes.ToDictionary(pair => pair.Key, pair => pair.Value);
+                var result = Attributes.ToDictionary(a => a.Name, a => a.Value);
                 if (Classes.Any())
                     result.Add("class", string.Join(" ", Classes));
                 // if (Styles.Any())
@@ -63,20 +63,13 @@ namespace Vue.cs.Framework.Runtime.Nodes
         {
             Classes.Add(className);
         }
-        public void AddAttribute(KeyValuePair<string, string?> attribute)
+        public void AddAttribute(Attribute attribute)
         {
-            Attributes[attribute.Key] = attribute.Value;
+            Attributes.Add(attribute);
         }
         public void AddEventHandler(EventHandlerData eventHandler)
         {
             EventHandlers.Add(eventHandler);
-        }
-        public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string?> valueProvider)
-        {
-            var reactiveAttribute = serviceProvider.Get<ReactiveAttribute.Builder>()
-                .Build(Id, attributeName, valueProvider);
-
-            Attributes.Add(attributeName, valueProvider.Value);
         }
         public void AddCondition(IReactiveProvider<bool> condition)
         {
