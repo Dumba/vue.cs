@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
+using Vue.cs.Framework.Runtime.Reactive;
 
 namespace Vue.cs.Framework.Runtime.Nodes
 {
@@ -19,13 +19,17 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
         public bool IsVisible => true;
 
-        public object Build()
+        public object Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
         {
             return new
             {
                 Id,
                 Content,
             };
+        }
+
+        public void Demolish()
+        {
         }
     }
 }

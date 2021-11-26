@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
+using Vue.cs.Framework.Runtime.Reactive;
 using Vue.cs.Framework.Runtime.Reactive.Interfaces;
 
 namespace Vue.cs.Framework.Runtime.Nodes
 {
-    public class NodeText : IPageNode
+    public class NodeText : IPageNode, IReactiveConsumer<string?>
     {
         public NodeText(string? text, Guid? id = null)
         {
@@ -19,6 +20,8 @@ namespace Vue.cs.Framework.Runtime.Nodes
             _reactiveText = reactiveText;
         }
 
+        private DependencyManager? _dependencyManager;
+        private JsManipulator? _jsManipulator;
         private string? _text;
         private IReactiveProvider<string?>? _reactiveText;
 
@@ -28,13 +31,35 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
         public bool IsVisible => true;
 
-        public object Build()
+        public object Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
         {
+            _dependencyManager = dependencyManager;
+            _jsManipulator = jsManipulator;
+
+            if (_reactiveText is not null)
+                _dependencyManager.RegisterDependency(this, _reactiveText);
+
             return new
             {
                 Id,
                 Text,
             };
+        }
+        public void Demolish()
+        {
+            if (_reactiveText is not null)
+                _dependencyManager?.UnregisterDependency(this, _reactiveText);
+
+            _dependencyManager = null;
+            _jsManipulator = null;
+        }
+
+        public async ValueTask Changed(string? oldValue, string? newValue)
+        {
+            if (_jsManipulator is null)
+                return;
+
+            await _jsManipulator.UpdateText(Id, newValue);
         }
     }
 }

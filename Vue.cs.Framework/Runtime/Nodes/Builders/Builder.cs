@@ -21,7 +21,6 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             _classes = new List<string>();
             _attributes = new HashSet<Attribute>();
             _eventHandlers = new HashSet<EventHandlerData>();
-            _conditions = new HashSet<IReactiveProvider<bool>>();
 
             _children = new List<IPageItem>();
         }
@@ -33,7 +32,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         private List<string> _classes;
         private HashSet<Attribute> _attributes;
         private HashSet<EventHandlerData> _eventHandlers;
-        private HashSet<IReactiveProvider<bool>> _conditions;
+        private IReactiveProvider<bool>? _condition;
         private List<IPageItem> _children;
 
         #region Element data
@@ -63,9 +62,9 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             return this;
         }
 
-        public Builder AddCondition(IReactiveProvider<bool> condition)
+        public Builder SetCondition(IReactiveProvider<bool> condition)
         {
-            _conditions.Add(condition);
+            _condition = condition ?? _condition;
 
             return this;
         }
@@ -82,11 +81,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         }
         public Builder AddText(IReactiveProvider<string?> textProvider)
         {
-            var id = Guid.NewGuid();
-            var reactiveText = _serviceProvider.Get<ReactiveText.Builder>()
-                .Build(id, textProvider);
-            var child = new NodeText(textProvider, id);
-            Console.WriteLine(id);
+            var child = new NodeText(textProvider);
 
             _addChild(child);
 
@@ -184,10 +179,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             }
 
             // condition
-            foreach (var condition in builder._conditions)
-            {
-                _conditions.Add(condition);
-            }
+            _condition = builder._condition ?? _condition;
         }
 
         public IPageItem Build()
@@ -199,29 +191,31 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             pageItem.InnerNodes = _children;
 
             // node data
-            foreach (var className in _classes)
+            foreach (var node in pageItem.Nodes)
             {
-                pageItem.AddClass(className);
+                if (node is NodeElement element)
+                {
+                    foreach (var className in _classes)
+                    {
+                        element.Classes.Add(className);
+                    }
+                    foreach (var attribute in _attributes)
+                    {
+                        element.Attributes.Add(attribute);
+                    }
+                    foreach (var eventHandler in _eventHandlers)
+                    {
+                        element.EventHandlers.Add(eventHandler);
+                    }
+                    element.Condition = _condition ?? element.Condition;
+                }
             }
-            foreach (var attribute in _attributes)
-            {
-                pageItem.AddAttribute(attribute);
-            }
-            foreach (var eventHandler in _eventHandlers)
-            {
-                pageItem.AddEventHandler(eventHandler);
-            }
-            foreach (var condition in _conditions)
-            {
-                pageItem.AddCondition(condition);
-            }
-            pageItem.BuildCondition(_serviceProvider);
 
             // finish
             return pageItem;
         }
 
-        protected virtual IPageItemBuild CreatePageItem()
+        protected virtual IPageItemCollection CreatePageItem()
         {
             return new NodeElement(_tagName);
         }

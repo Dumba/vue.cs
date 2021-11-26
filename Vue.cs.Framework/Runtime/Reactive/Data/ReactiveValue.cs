@@ -21,10 +21,5 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
             Value = value;
             return _dependencyManager.ValueChanged(this, oldValue, Value);
         }
-
-        public void Register(IReactiveConsumer<TValue> consumer)
-        {
-            _dependencyManager.RegisterDependency(consumer, this);
-        }
     }
 }

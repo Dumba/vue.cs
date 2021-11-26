@@ -60,12 +60,30 @@ namespace Vue.cs.Framework.Runtime.Reactive
                 _dependency[master].Add(slave);
             }
         }
-        public void RegisterDependency<TEnumerable>(IReactiveCollectionConsumer<TEnumerable> slave, params IReactiveCollectionProvider<TEnumerable>[] masters)
+        public void UnregisterDependency<TValue>(IReactiveConsumer<TValue> slave, params IReactiveProvider<TValue>[] masters)
+        {
+            foreach (var master in masters)
+            {
+                if (_dependency.TryGetValue(master, out var slaves))
+                    slaves.Remove(slave);
+            }
+        }
+        public void RegisterDependency<TItem>(IReactiveCollectionConsumer<TItem> slave, params IReactiveCollectionProvider<TItem>[] masters)
         {
             foreach (var master in masters)
             {
                 _enumerableDependency.TryAdd(master, new HashSet<IReactiveCollectionConsumer>());
                 _enumerableDependency[master].Add(slave);
+            }
+        }
+        public void UnregisterDependency<TItem>(IReactiveCollectionConsumer<TItem> slave, params IReactiveCollectionProvider<TItem>[] masters)
+        {
+            foreach (var master in masters)
+            {
+                if (_enumerableDependency.TryGetValue(master, out var slaves))
+                {
+                    slaves.Remove(slave);
+                }
             }
         }
 

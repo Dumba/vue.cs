@@ -29,10 +29,5 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
             _list.Remove(value);
             return _dependencyManager.ValueRemoved(this, value);
         }
-
-        public void Register(IReactiveCollectionConsumer<TItem> consumer)
-        {
-            _dependencyManager.RegisterDependency(consumer, this);
-        }
     }
 }

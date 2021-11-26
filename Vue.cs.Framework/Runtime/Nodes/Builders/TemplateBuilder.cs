@@ -18,7 +18,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         public NodeComment StartNode { get; set; }
         public NodeComment EndNode { get; set; }
 
-        protected override IPageItemBuild CreatePageItem()
+        protected override IPageItemCollection CreatePageItem()
         {
             return new Template(StartNode, EndNode);
         }
