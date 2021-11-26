@@ -29,7 +29,12 @@ namespace test_app.Runtime.Reactive
         public ValueTask InsertNode(Guid parentElementId, IPageNode node)
         {
             // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementId != Guid.Empty ? parentElementId : Program.ParentSelector, node, null);
+            return _js.InvokeVoidAsync("InsertNode", parentElementId, node, null);
+        }
+        public ValueTask InsertNode(string parentElementSelector, IPageNode node)
+        {
+            // Guid.Empty = Master component
+            return _js.InvokeVoidAsync("InsertNode", parentElementSelector, node, null);
         }
         public ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
         {

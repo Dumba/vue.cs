@@ -32,7 +32,7 @@ namespace test_app.Base
         }
         private DotNetObjectReference<BaseComponent> _thisAsJsInterop;
 
-        public ValueTask Render(Guid parentId)
+        public ValueTask Render(string parentElementSelector)
         {
             var jsManipulator = _serviceProvider.GetService<JsManipulator>();
             
@@ -41,7 +41,7 @@ namespace test_app.Base
 
             return builder
                 .Build()
-                .Render(jsManipulator, parentId);
+                .Render(jsManipulator, parentElementSelector);
         }
 
         public abstract void Setup(Builder builder, IEnumerable<IPageItem> childNodes = null);
