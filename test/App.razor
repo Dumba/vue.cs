@@ -1,0 +1,11 @@
+﻿@using Microsoft.Extensions.DependencyInjection;
+@inject System.IServiceProvider _serviceProvider;
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var masterComponent = _serviceProvider.GetService<test.Components.Master>()
+            ?? throw new Exception("Missing master component");
+        await masterComponent.Render("#app");
+    }
+}
