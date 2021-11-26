@@ -21,12 +21,10 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public NodeComment EndNode { get; }
 
         public List<IPageItem> InnerNodes { get; set; }
-        public IReactiveProvider<bool>? Condition { get; set; }
 
         public IEnumerable<IPageNode> Nodes => InnerNodes.SelectMany(i => i.Nodes)
             .Prepend(StartNode)
             .Append(EndNode);
-        public bool IsVisible => Condition?.Get(null) ?? true;
 
         public void AddClass(string className)
         {
@@ -65,6 +63,28 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 if (item is IPageItemBuild pageItem)
                 {
                     pageItem.AddReactiveAttribute(serviceProvider, attributeName, valueProvider);
+                }
+            }
+        }
+
+        public void AddCondition(IReactiveProvider<bool> condition)
+        {
+            foreach (var node in InnerNodes)
+            {
+                if (node is IPageItemBuild element)
+                {
+                    element.AddCondition(condition);
+                }
+            }
+        }
+
+        public void BuildCondition(IServiceProvider serviceProvider)
+        {
+            foreach (var node in InnerNodes)
+            {
+                if (node is IPageItemBuild element)
+                {
+                    element.BuildCondition(serviceProvider);
                 }
             }
         }

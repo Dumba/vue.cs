@@ -22,6 +22,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             _attributes = new Dictionary<string, string>();
             _reactiveAttributes = new Dictionary<string, IReactiveProvider<string>>();
             _eventHandlers = new HashSet<EventHandlerData>();
+            _conditions = new HashSet<IReactiveProvider<bool>>();
 
             _children = new List<IPageItem>();
         }
@@ -34,7 +35,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         private Dictionary<string, string> _attributes;
         private Dictionary<string, IReactiveProvider<string>> _reactiveAttributes;
         private HashSet<EventHandlerData> _eventHandlers;
-        private IReactiveProvider<bool>? _condition;
+        private HashSet<IReactiveProvider<bool>> _conditions;
         private List<IPageItem> _children;
 
         #region Element data
@@ -64,9 +65,9 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             return this;
         }
 
-        public Builder SetCondition(IReactiveProvider<bool> condition)
+        public Builder AddCondition(IReactiveProvider<bool> condition)
         {
-            _condition = condition;
+            _conditions.Add(condition);
 
             return this;
         }
@@ -140,7 +141,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             {
                 templateBuilder.AddChild(tagName, setupChild is not null
                     ? builder => setupChild(builder, item)
-                    : builder => {});
+                    : builder => { });
             }
 
             _addChild(templateBuilder.Build());
@@ -188,7 +189,10 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             }
 
             // condition
-            _condition = builder._condition;
+            foreach (var condition in builder._conditions)
+            {
+                _conditions.Add(condition);
+            }
         }
 
         public IPageItem Build()
@@ -216,13 +220,11 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             {
                 pageItem.AddEventHandler(eventHandler);
             }
-            pageItem.Condition = _condition;
-
-            if (_condition is not null)
+            foreach (var condition in _conditions)
             {
-                _serviceProvider.Get<ReactivePageItem.Builder>()
-                    .Build(pageItem, _condition, out _);
+                pageItem.AddCondition(condition);
             }
+            pageItem.BuildCondition(_serviceProvider);
 
             // finish
             return pageItem;

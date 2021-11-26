@@ -19,6 +19,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
             Classes = new List<string>();
             Attributes = new Dictionary<string, string?>();
             EventHandlers = new HashSet<EventHandlerData>();
+            Conditions = new HashSet<IReactiveProvider<bool>>();
 
             Children = new List<IPageItem>();
         }
@@ -48,14 +49,15 @@ namespace Vue.cs.Framework.Runtime.Nodes
         [JsonIgnore]
         public List<IPageItem> Children { get; set; }
         [JsonIgnore]
-        public IReactiveProvider<bool>? Condition { get; set; }
+        public HashSet<IReactiveProvider<bool>> Conditions { get; set; }
+        private IReactiveProvider<bool>? _finalCondition;
 
         [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
         [JsonIgnore]
         public List<IPageItem> InnerNodes { get => Children; set => Children = value; }
         [JsonIgnore]
-        public bool IsVisible => Condition?.Get(null) ?? true;
+        public bool IsVisible => _finalCondition?.Get(null) ?? true;
 
         public void AddClass(string className)
         {
@@ -75,6 +77,24 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 .Build(Id, attributeName, valueProvider, out var text);
 
             Attributes.Add(attributeName, text);
+        }
+        public void AddCondition(IReactiveProvider<bool> condition)
+        {
+            Conditions.Add(condition);
+        }
+
+        public void BuildCondition(IServiceProvider serviceProvider)
+        {
+            if (!Conditions.Any())
+                return;
+
+            if (Conditions.Count() > 1)
+                Console.WriteLine("hoops");
+
+            _finalCondition = Conditions.First();
+
+            serviceProvider.Get<ReactivePageItem.Builder>()
+                .Build(this, _finalCondition, out _);
         }
     }
 }
