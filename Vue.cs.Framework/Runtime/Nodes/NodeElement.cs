@@ -26,9 +26,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
 
         public Guid Id { get; }
         public string TagName { get; }
-        [JsonIgnore]
         public List<string> Classes { get; set; }
-        [JsonIgnore]
         public HashSet<Attribute> Attributes { get; set; }
         public HashSet<EventHandlerData> EventHandlers { get; set; }
 
@@ -46,17 +44,12 @@ namespace Vue.cs.Framework.Runtime.Nodes
             }
         }
 
-        [JsonIgnore]
         public List<IPageItem> Children { get; set; }
-        [JsonIgnore]
         public HashSet<IReactiveProvider<bool>> Conditions { get; set; }
         private IReactiveProvider<bool>? _finalCondition;
 
-        [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
-        [JsonIgnore]
         public List<IPageItem> InnerNodes { get => Children; set => Children = value; }
-        [JsonIgnore]
         public bool IsVisible => _finalCondition?.Value ?? true;
 
         public void AddClass(string className)
@@ -89,6 +82,17 @@ namespace Vue.cs.Framework.Runtime.Nodes
 
             serviceProvider.Get<ReactivePageItem.Builder>()
                 .Build(this, _finalCondition);
+        }
+
+        public object Build()
+        {
+            return new
+            {
+                Id,
+                TagName,
+                AllAttributes,
+                EventHandlers,
+            };
         }
     }
 }

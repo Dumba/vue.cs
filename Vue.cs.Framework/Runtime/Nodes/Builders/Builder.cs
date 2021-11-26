@@ -86,6 +86,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             var reactiveText = _serviceProvider.Get<ReactiveText.Builder>()
                 .Build(id, textProvider);
             var child = new NodeText(textProvider, id);
+            Console.WriteLine(id);
 
             _addChild(child);
 

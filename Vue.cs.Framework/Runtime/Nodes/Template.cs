@@ -78,5 +78,12 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 }
             }
         }
+
+        public object Build()
+        {
+            return InnerNodes
+                .Select(n => n.Build())
+                .ToArray();
+        }
     }
 }

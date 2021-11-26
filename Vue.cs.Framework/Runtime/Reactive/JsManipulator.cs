@@ -29,20 +29,20 @@ namespace Vue.cs.Framework.Runtime.Reactive
         public ValueTask InsertNode(Guid parentElementId, IPageNode node)
         {
             // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementId, node, null);
+            return _js.InvokeVoidAsync("InsertNode", parentElementId, node.Build(), null);
         }
         public ValueTask InsertNode(string parentElementSelector, IPageNode node)
         {
             // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementSelector, node, null);
+            return _js.InvokeVoidAsync("InsertNode", parentElementSelector, node.Build(), null);
         }
         public ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
         {
-            return _js.InvokeVoidAsync("InsertNodeBefore", node, insertBeforeNodeId);
+            return _js.InvokeVoidAsync("InsertNodeBefore", node.Build(), insertBeforeNodeId);
         }
         public ValueTask ReplaceNode(IPageNode pageItem)
         {
-            return _js.InvokeVoidAsync("ReplaceNode", pageItem.Id, pageItem);
+            return _js.InvokeVoidAsync("ReplaceNode", pageItem.Id, pageItem.Build());
         }
         public ValueTask RemoveNode(Guid nodeId)
         {

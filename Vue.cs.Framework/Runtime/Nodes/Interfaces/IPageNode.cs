@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace Vue.cs.Framework.Runtime.Nodes.Interfaces
 {

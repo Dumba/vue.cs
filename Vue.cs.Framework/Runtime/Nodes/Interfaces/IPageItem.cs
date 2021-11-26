@@ -11,6 +11,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Interfaces
         ///   Return all direct nodes, recursively include template-nodes
         /// </summary>
         IEnumerable<IPageNode> Nodes { get; }
+        object Build();
     }
 
     public static class IPageItemExtension

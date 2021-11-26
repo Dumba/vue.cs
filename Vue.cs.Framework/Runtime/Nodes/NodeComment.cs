@@ -16,9 +16,16 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public Guid Id { get; }
         public string Content { get; }
 
-        [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
-        [JsonIgnore]
         public bool IsVisible => true;
+
+        public object Build()
+        {
+            return new
+            {
+                Id,
+                Content,
+            };
+        }
     }
 }
