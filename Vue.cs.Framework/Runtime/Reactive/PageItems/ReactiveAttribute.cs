@@ -19,7 +19,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
         public Guid PageItemId { get; }
         public string AttributeName { get; }
 
-        public ValueTask Changed(string oldValue, string newValue)
+        public ValueTask Changed(string? oldValue, string? newValue)
         {
             return _jsManipulator.SetAttribute(PageItemId, AttributeName, newValue);
         }
@@ -33,7 +33,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private readonly JsManipulator _jsManipulator;
 
-            public ReactiveAttribute Build(Guid pageItemId, string attributeName, IReactiveProvider<string> valueProvider, out string initValue)
+            public ReactiveAttribute Build(Guid pageItemId, string attributeName, IReactiveProvider<string> valueProvider, out string? initValue)
             {
                 var reactiveAttribute = new ReactiveAttribute(_jsManipulator, pageItemId, attributeName);
                 initValue = valueProvider.Get(reactiveAttribute);

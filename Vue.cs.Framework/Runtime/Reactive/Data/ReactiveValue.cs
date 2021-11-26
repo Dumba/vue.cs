@@ -5,7 +5,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
 {
     public class ReactiveValue<TValue> : IReactiveProvider<TValue>
     {
-        public ReactiveValue(DependencyManager dependencyManager, TValue value = default)
+        public ReactiveValue(DependencyManager dependencyManager, TValue? value = default)
         {
             _dependencyManager = dependencyManager;
             _value = value;
@@ -13,8 +13,8 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
 
         private readonly DependencyManager _dependencyManager;
 
-        private TValue _value;
-        public TValue Get(IReactiveConsumer<TValue> consumer)
+        private TValue? _value;
+        public TValue? Get(IReactiveConsumer<TValue>? consumer)
         {
             if (consumer is not null)
                 _dependencyManager.RegisterDependency(consumer, this);

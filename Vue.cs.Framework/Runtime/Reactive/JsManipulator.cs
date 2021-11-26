@@ -16,7 +16,7 @@ namespace Vue.cs.Framework.Runtime.Reactive
         public IJSRuntime _js;
 
         // attributes
-        public ValueTask SetAttribute(Guid elementId, string attributeName, string attributeValue)
+        public ValueTask SetAttribute(Guid elementId, string attributeName, string? attributeValue)
         {
             return _js.InvokeVoidAsync("SetAttribute", elementId, attributeName, attributeValue);
         }
@@ -48,7 +48,7 @@ namespace Vue.cs.Framework.Runtime.Reactive
         {
             return _js.InvokeVoidAsync("RemoveNode", nodeId);
         }
-        public ValueTask UpdateText(Guid nodeId, string newText)
+        public ValueTask UpdateText(Guid nodeId, string? newText)
         {
             return _js.InvokeVoidAsync("UpdateText", nodeId, newText);
         }

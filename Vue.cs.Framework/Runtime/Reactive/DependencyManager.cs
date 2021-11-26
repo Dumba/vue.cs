@@ -7,16 +7,16 @@ namespace Vue.cs.Framework.Runtime.Reactive
 {
     public class DependencyManager
     {
-        public async ValueTask ValueChanged<TValue>(IReactiveProvider<TValue> master, TValue oldValue, TValue newValue)
+        public async ValueTask ValueChanged<TValue>(IReactiveProvider<TValue> master, TValue? oldValue, TValue? newValue)
         {
-            if (oldValue.GetHashCode() == newValue.GetHashCode())
+            if (oldValue?.Equals(newValue) ?? newValue is null)
                 return;
 
             if (!_dependency.TryGetValue(master, out var slaves))
                 return;
                 
             var tasks = slaves
-                .Select(slave => (slave as IReactiveConsumer<TValue>).Changed(oldValue, newValue));
+                .Select(slave => (slave as IReactiveConsumer<TValue>)!.Changed(oldValue, newValue));
                 
             foreach (var task in tasks)
             {
@@ -30,7 +30,7 @@ namespace Vue.cs.Framework.Runtime.Reactive
                 return;
                 
             var tasks = slaves
-                .Select(slave => (slave as IReactiveCollectionConsumer<TItem>).Added(newValue));
+                .Select(slave => (slave as IReactiveCollectionConsumer<TItem>)!.Added(newValue));
                 
             foreach (var task in tasks)
             {
@@ -44,7 +44,7 @@ namespace Vue.cs.Framework.Runtime.Reactive
                 return;
                 
             var tasks = slaves
-                .Select(slave => (slave as IReactiveCollectionConsumer<TValue>).Removed(oldValue));
+                .Select(slave => (slave as IReactiveCollectionConsumer<TValue>)!.Removed(oldValue));
             
             foreach (var task in tasks)
             {

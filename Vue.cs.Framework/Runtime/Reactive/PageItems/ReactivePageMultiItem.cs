@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Vue.cs.Framework.Base;
+using Vue.cs.Framework.Extensions;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
 using Vue.cs.Framework.Runtime.Reactive.Data;
 using Vue.cs.Framework.Runtime.Reactive.Interfaces;
-using Vue.cs.Framework.Runtime.Nodes;
 using Vue.cs.Framework.Runtime.Nodes.Builders;
 using PageItemBuilder = Vue.cs.Framework.Runtime.Nodes.Builders.Builder;
 
@@ -15,20 +13,20 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 {
     public class ReactivePageMultiItem<TItem> : IReactiveCollectionConsumer<TItem>
     {
-        public ReactivePageMultiItem(IServiceProvider serviceProvider, BaseComponent parentComponent, string tagName, Action<PageItemBuilder, TItem> setupChild)
+        public ReactivePageMultiItem(IServiceProvider serviceProvider, BaseComponent parentComponent, string tagName, Action<PageItemBuilder, TItem>? setupChild)
         {
             _serviceProvider = serviceProvider;
             _parentComponent = parentComponent;
             _tagName = tagName;
             _setupChild = setupChild;
-            _mapping = new Dictionary<TItem, IPageItem>();
+            _mapping = new Dictionary<NullObject<TItem>, IPageItem>();
         }
 
         private readonly IServiceProvider _serviceProvider;
         private BaseComponent _parentComponent;
         private string _tagName;
-        private Action<PageItemBuilder, TItem> _setupChild;
-        private Dictionary<TItem, IPageItem> _mapping;
+        private Action<PageItemBuilder, TItem>? _setupChild;
+        private Dictionary<NullObject<TItem>, IPageItem> _mapping;
 
         public Guid TemplateEndId { get; set; }
 
@@ -38,7 +36,12 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             foreach (var item in initCollection)
             {
-                templateBuilder.AddChild(_tagName, elementBuilder => _setupChild(elementBuilder, item), out var pageItem);
+                templateBuilder.AddChild(
+                    _tagName,
+                    _setupChild is not null
+                        ? elementBuilder => _setupChild(elementBuilder, item)
+                        : elementBuilder => {},
+                    out var pageItem);
 
                 _mapping.Add(item, pageItem);
             }
@@ -51,7 +54,12 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             foreach (var item in initCollection.Get(this))
             {
-                templateBuilder.AddChild(_tagName, elementBuilder => _setupChild(elementBuilder, item), out var pageItem);
+                templateBuilder.AddChild(
+                    _tagName,
+                    _setupChild is not null
+                        ? elementBuilder => _setupChild(elementBuilder, item)
+                        : elementBuilder => {},
+                    out var pageItem);
 
                 _mapping.Add(item, pageItem);
             }
@@ -62,9 +70,10 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
         public async ValueTask Added(TItem value)
         {
-            var jsManipulator = _serviceProvider.GetService<JsManipulator>();
+            var jsManipulator = _serviceProvider.Get<JsManipulator>();
             var builder = new PageItemBuilder(_serviceProvider, _parentComponent, _tagName);
-            _setupChild(builder, value);
+            if (_setupChild is not null)
+                _setupChild(builder, value);
             var pageItem = builder.Build();
 
             _mapping.Add(value, pageItem);
@@ -84,7 +93,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
         public async ValueTask Removed(TItem value)
         {
-            var jsManipulator = _serviceProvider.GetService<JsManipulator>();
+            var jsManipulator = _serviceProvider.Get<JsManipulator>();
             var pageItem = _mapping[value];
             _mapping.Remove(value);
 
@@ -103,7 +112,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private IServiceProvider _serviceProvider;
 
-            public ReactivePageMultiItem<TItem> Build(BaseComponent parentComponent, string tagName, Action<PageItemBuilder, TItem> setupChild)
+            public ReactivePageMultiItem<TItem> Build(BaseComponent parentComponent, string tagName, Action<PageItemBuilder, TItem>? setupChild)
             {
                 return new ReactivePageMultiItem<TItem>(_serviceProvider, parentComponent, tagName, setupChild);
             }

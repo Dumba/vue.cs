@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
+using Vue.cs.Framework.Extensions;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
 using Vue.cs.Framework.Runtime.Nodes.Models;
 using Vue.cs.Framework.Runtime.Reactive.Interfaces;
@@ -17,7 +17,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
             Id = id ?? Guid.NewGuid();
             TagName = tagName;
             Classes = new List<string>();
-            Attributes = new Dictionary<string, string>();
+            Attributes = new Dictionary<string, string?>();
             EventHandlers = new HashSet<EventHandlerData>();
 
             Children = new List<IPageItem>();
@@ -28,10 +28,10 @@ namespace Vue.cs.Framework.Runtime.Nodes
         [JsonIgnore]
         public List<string> Classes { get; set; }
         [JsonIgnore]
-        public Dictionary<string, string> Attributes { get; set; }
+        public Dictionary<string, string?> Attributes { get; set; }
         public HashSet<EventHandlerData> EventHandlers { get; set; }
 
-        public Dictionary<string, string> AllAttributes
+        public Dictionary<string, string?> AllAttributes
         {
             get
             {
@@ -48,7 +48,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         [JsonIgnore]
         public List<IPageItem> Children { get; set; }
         [JsonIgnore]
-        public IReactiveProvider<bool> Condition { get; set; }
+        public IReactiveProvider<bool>? Condition { get; set; }
 
         [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
@@ -71,7 +71,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         }
         public void AddReactiveAttribute(IServiceProvider serviceProvider, string attributeName, IReactiveProvider<string> valueProvider)
         {
-            var reactiveAttribute = serviceProvider.GetService<ReactiveAttribute.Builder>()
+            var reactiveAttribute = serviceProvider.Get<ReactiveAttribute.Builder>()
                 .Build(Id, attributeName, valueProvider, out var text);
 
             Attributes.Add(attributeName, text);

@@ -7,7 +7,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
 {
     public class NodeComment : IPageNode
     {
-        public NodeComment(string content = null, Guid? id = null)
+        public NodeComment(string? content = null, Guid? id = null)
         {
             Id = id ?? Guid.NewGuid();
             Content = content ?? $" placeholder for {Id} ";

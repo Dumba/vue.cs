@@ -21,7 +21,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public NodeComment EndNode { get; }
 
         public List<IPageItem> InnerNodes { get; set; }
-        public IReactiveProvider<bool> Condition { get; set; }
+        public IReactiveProvider<bool>? Condition { get; set; }
 
         public IEnumerable<IPageNode> Nodes => InnerNodes.SelectMany(i => i.Nodes)
             .Prepend(StartNode)

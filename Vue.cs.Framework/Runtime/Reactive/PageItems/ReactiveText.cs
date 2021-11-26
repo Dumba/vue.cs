@@ -17,7 +17,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
         public Guid PageItemId { get; }
 
-        public ValueTask Changed(string oldValue, string newValue)
+        public ValueTask Changed(string? oldValue, string? newValue)
         {
             return _jsManipulator.UpdateText(PageItemId, newValue);
         }
@@ -31,7 +31,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.PageItems
 
             private readonly JsManipulator _jsManipulator;
 
-            public ReactiveText Build(Guid pageItemId, IReactiveProvider<string> valueProvider, out string initValue)
+            public ReactiveText Build(Guid pageItemId, IReactiveProvider<string> valueProvider, out string? initValue)
             {
                 var reactiveText = new ReactiveText(_jsManipulator, pageItemId);
                 initValue = valueProvider.Get(reactiveText);

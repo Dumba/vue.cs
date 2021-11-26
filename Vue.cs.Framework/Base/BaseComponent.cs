@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Vue.cs.Framework.Extensions;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
 using Vue.cs.Framework.Runtime.Nodes.Builders;
 using Vue.cs.Framework.Runtime.Reactive;
@@ -30,11 +30,11 @@ namespace Vue.cs.Framework.Base
                 return _thisAsJsInterop;
             }
         }
-        private DotNetObjectReference<BaseComponent> _thisAsJsInterop;
+        private DotNetObjectReference<BaseComponent>? _thisAsJsInterop;
 
         public ValueTask Render(string parentElementSelector)
         {
-            var jsManipulator = _serviceProvider.GetService<JsManipulator>();
+            var jsManipulator = _serviceProvider.Get<JsManipulator>();
             
             var builder = new TemplateBuilder(_serviceProvider, this);
             Setup(builder);
@@ -44,7 +44,7 @@ namespace Vue.cs.Framework.Base
                 .Render(jsManipulator, parentElementSelector);
         }
 
-        public abstract void Setup(Builder builder, IEnumerable<IPageItem> childNodes = null);
+        public abstract void Setup(Builder builder, IEnumerable<IPageItem>? childNodes = null);
 
         public void Dispose()
         {

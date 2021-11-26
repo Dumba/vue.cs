@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 using Vue.cs.Framework.Base;
+using Vue.cs.Framework.Extensions;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
 using Vue.cs.Framework.Runtime.Nodes.Models;
 using Vue.cs.Framework.Runtime.Reactive.Data;
@@ -34,7 +34,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         private Dictionary<string, string> _attributes;
         private Dictionary<string, IReactiveProvider<string>> _reactiveAttributes;
         private HashSet<EventHandlerData> _eventHandlers;
-        private IReactiveProvider<bool> _condition;
+        private IReactiveProvider<bool>? _condition;
         private List<IPageItem> _children;
 
         #region Element data
@@ -58,13 +58,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         }
         public Builder AddEventListener(string eventName, string methodName, params object[] @params)
         {
-            var eventHandler = new EventHandlerData
-            {
-                Event = eventName,
-                ComponentInterop = _parentComponent.ThisAsJsInterop,
-                ComponentMethodName = methodName,
-                Params = @params
-            };
+            var eventHandler = new EventHandlerData(eventName, _parentComponent.ThisAsJsInterop, methodName, @params);
             _eventHandlers.Add(eventHandler);
 
             return this;
@@ -90,7 +84,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         public Builder AddText(IReactiveProvider<string> textProvider)
         {
             var id = Guid.NewGuid();
-            var reactiveText = _serviceProvider.GetService<ReactiveText.Builder>()
+            var reactiveText = _serviceProvider.Get<ReactiveText.Builder>()
                 .Build(id, textProvider, out var text);
             var child = new NodeText(text, id);
 
@@ -99,7 +93,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             return this;
         }
 
-        public Builder AddChild(string tagName, Action<Builder> setupChild = null)
+        public Builder AddChild(string tagName, Action<Builder>? setupChild = null)
         {
             var childBuilder = new Builder(_serviceProvider, _parentComponent, tagName);
             if (setupChild != null)
@@ -109,14 +103,15 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             return this;
         }
-        public Builder AddChild<TComponent>(Action<Builder> setupChild = null)
+        public Builder AddChild<TComponent>(Action<Builder>? setupChild = null)
             where TComponent : BaseComponent
         {
-            var component = _serviceProvider.GetService<TComponent>();
+            var component = _serviceProvider.Get<TComponent>();
             var builder = new TemplateBuilder(_serviceProvider, component);
 
             var helperBuilder = new TemplateBuilder(_serviceProvider, component);
-            setupChild(helperBuilder);
+            if (setupChild is not null)
+                setupChild(helperBuilder);
             builder.GetNodeData(helperBuilder);
 
             component.Setup(builder, helperBuilder._children);
@@ -137,13 +132,15 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             return this;
         }
 
-        public Builder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<Builder, TItem> setupChild = null)
+        public Builder AddChildren<TItem>(IEnumerable<TItem> collection, string tagName, Action<Builder, TItem>? setupChild = null)
         {
             var templateBuilder = new TemplateBuilder(_serviceProvider, _parentComponent);
 
             foreach (var item in collection)
             {
-                templateBuilder.AddChild(tagName, builder => setupChild(builder, item));
+                templateBuilder.AddChild(tagName, setupChild is not null
+                    ? builder => setupChild(builder, item)
+                    : builder => {});
             }
 
             _addChild(templateBuilder.Build());
@@ -151,9 +148,9 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             return this;
         }
 
-        public Builder AddChildren<TItem>(ReactiveCollection<TItem> collection, string tagName, Action<Builder, TItem> setupChild = null)
+        public Builder AddChildren<TItem>(ReactiveCollection<TItem> collection, string tagName, Action<Builder, TItem>? setupChild = null)
         {
-            var reactivePageMultiItem = _serviceProvider.GetService<ReactivePageMultiItem<TItem>.Builder>()
+            var reactivePageMultiItem = _serviceProvider.Get<ReactivePageMultiItem<TItem>.Builder>()
                 .Build(_parentComponent, tagName, setupChild);
 
             var collectionBuilder = reactivePageMultiItem.Init(collection);
@@ -223,7 +220,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             if (_condition is not null)
             {
-                _serviceProvider.GetService<ReactivePageItem.Builder>()
+                _serviceProvider.Get<ReactivePageItem.Builder>()
                     .Build(pageItem, _condition, out _);
             }
 

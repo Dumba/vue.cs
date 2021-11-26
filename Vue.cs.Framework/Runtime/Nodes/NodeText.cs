@@ -7,14 +7,14 @@ namespace Vue.cs.Framework.Runtime.Nodes
 {
     public class NodeText : IPageNode
     {
-        public NodeText(string text, Guid? id = null)
+        public NodeText(string? text, Guid? id = null)
         {
             Id = id ?? Guid.NewGuid();
             Text = text;
         }
 
         public Guid Id { get; }
-        public string Text { get; }
+        public string? Text { get; }
 
         [JsonIgnore]
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }

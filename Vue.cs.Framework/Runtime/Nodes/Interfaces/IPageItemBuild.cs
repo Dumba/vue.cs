@@ -8,7 +8,7 @@ namespace Vue.cs.Framework.Runtime.Nodes.Interfaces
     public interface IPageItemBuild : IPageItem
     {
         List<IPageItem> InnerNodes { set; }
-        IReactiveProvider<bool> Condition { set; }
+        IReactiveProvider<bool>? Condition { set; }
         
         void AddClass(string className);
         void AddAttribute(KeyValuePair<string, string> attribute);

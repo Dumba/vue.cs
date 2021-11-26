@@ -6,7 +6,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
 {
     public class ReactiveValueGetter<TIn, TOut> : IReactiveConsumer<TIn>, IReactiveProvider<TOut>
     {
-        public ReactiveValueGetter(DependencyManager dependencyManager, Func<TIn, TOut> getter, IReactiveProvider<TIn> valueProvider)
+        public ReactiveValueGetter(DependencyManager dependencyManager, Func<TIn?, TOut?> getter, IReactiveProvider<TIn> valueProvider)
         {
             _dependencyManager = dependencyManager;
             _getter = getter;
@@ -16,14 +16,16 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
 
         private readonly DependencyManager _dependencyManager;
 
-        private Func<TIn, TOut> _getter;
-        private TOut _value;
-        public TOut Get(IReactiveConsumer<TOut> consumer)
+        private Func<TIn?, TOut?> _getter;
+        private TOut? _value;
+        public TOut? Get(IReactiveConsumer<TOut>? consumer)
         {
-            _dependencyManager.RegisterDependency(consumer, this);
+            if (consumer is not null)
+                _dependencyManager.RegisterDependency(consumer, this);
+
             return _value;
         }
-        public ValueTask Changed(TIn oldValue, TIn newValue)
+        public ValueTask Changed(TIn? oldValue, TIn? newValue)
         {
             var oldOutValue = _value;
             _value = _getter(newValue);
@@ -40,7 +42,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
 
             private readonly DependencyManager _dependencyManager;
 
-            public ReactiveValueGetter<TIn, TOut> Build(Func<TIn, TOut> getter, IReactiveProvider<TIn> valueProvider)
+            public ReactiveValueGetter<TIn, TOut> Build(Func<TIn?, TOut?> getter, IReactiveProvider<TIn> valueProvider)
             {
                 return new ReactiveValueGetter<TIn, TOut>(_dependencyManager, getter, valueProvider);
             }
