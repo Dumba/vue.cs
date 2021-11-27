@@ -20,8 +20,8 @@ namespace Vue.cs.Framework.Runtime.Nodes
             var startId = Guid.NewGuid();
             var endId = Guid.NewGuid();
 
-            _startNode = new NodeComment($" collection {startId} ", startId);
-            _endNode = new NodeComment($" collection {startId} ", endId);
+            _startNode = new($" collection {startId} ", startId);
+            _endNode = new($" collection {startId} ", endId);
 
             foreach (var item in _collectionProvider.Value)
             {
@@ -59,7 +59,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         {
             _startNode.Demolish();
             _endNode.Demolish();
-            
+
             foreach (var item in _mapping)
             {
                 item.Value.Demolish();

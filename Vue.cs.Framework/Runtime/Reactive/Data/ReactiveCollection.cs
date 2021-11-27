@@ -10,7 +10,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
         public ReactiveCollection(DependencyManager dependencyManager, IEnumerable<TItem>? initCollection = null)
         {
             _dependencyManager = dependencyManager;
-            _list = initCollection?.ToList() ?? new List<TItem>();
+            _list = initCollection?.ToList() ?? new();
         }
 
         private readonly DependencyManager _dependencyManager;

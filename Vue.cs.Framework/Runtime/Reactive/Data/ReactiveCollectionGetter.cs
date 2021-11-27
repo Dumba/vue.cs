@@ -11,7 +11,7 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
         {
             _dependencyManager = dependencyManager;
             _getter = getter;
-            _list = new List<TItemOut>();
+            _list = new();
         }
 
         private readonly DependencyManager _dependencyManager;

@@ -17,11 +17,11 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             _parentComponent = parentComponent;
 
             _tagName = tagName;
-            _classes = new List<string>();
-            _attributes = new HashSet<Attribute>();
-            _eventHandlers = new HashSet<EventHandlerData>();
+            _classes = new();
+            _attributes = new();
+            _eventHandlers = new();
 
-            _children = new List<IPageItem>();
+            _children = new();
         }
 
         private readonly IServiceProvider _serviceProvider;

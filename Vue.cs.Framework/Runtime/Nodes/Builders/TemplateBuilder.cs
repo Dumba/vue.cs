@@ -12,8 +12,8 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             var startId = Guid.NewGuid();
             var endId = Guid.NewGuid();
 
-            _startNode = new NodeComment($" {commentText ?? "template"} {startId} ", startId);
-            _endNode = new NodeComment($" {commentText ?? "template"} {startId} ", endId);
+            _startNode = new($" {commentText ?? "template"} {startId} ", startId);
+            _endNode = new($" {commentText ?? "template"} {startId} ", endId);
         }
 
         private NodeComment _startNode;

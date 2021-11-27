@@ -12,9 +12,9 @@ namespace Vue.cs.Framework.Runtime.Nodes
             _startNode = startNode;
             _endNode = endNode;
 
-            InnerNodes = new List<IPageItem>();
+            InnerNodes = new();
         }
-        
+
         private NodeComment _startNode;
         private NodeComment _endNode;
 
@@ -35,7 +35,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         {
             _startNode.Demolish();
             _endNode.Demolish();
-            
+
             foreach (var item in InnerNodes)
             {
                 item.Demolish();

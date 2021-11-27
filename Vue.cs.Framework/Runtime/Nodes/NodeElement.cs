@@ -15,11 +15,11 @@ namespace Vue.cs.Framework.Runtime.Nodes
         {
             Id = id ?? Guid.NewGuid();
             TagName = tagName;
-            Classes = new List<string>();
-            Attributes = new HashSet<Attribute>();
-            EventHandlers = new HashSet<EventHandlerData>();
+            Classes = new();
+            Attributes = new();
+            EventHandlers = new();
 
-            Children = new List<IPageItem>();
+            Children = new();
         }
 
         private DependencyManager? _dependencyManager;
@@ -49,11 +49,11 @@ namespace Vue.cs.Framework.Runtime.Nodes
                 if (!Condition.Value)
                     return new NodeComment(id: Id).Build(_dependencyManager, _jsManipulator);
             }
-            
+
             var childrenBuilt = Children
                 .SelectMany(ch => ch.Build(dependencyManager, jsManipulator))
                 .ToArray();
-                
+
             foreach (var attribute in Attributes)
             {
                 attribute.Build(dependencyManager, jsManipulator, Id);
