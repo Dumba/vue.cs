@@ -10,7 +10,10 @@ namespace Vue.cs.Framework.Runtime.Reactive.Data
         {
             _dependencyManager = dependencyManager;
             _getter = getter;
+
             Value = _getter(valueProvider.Value);
+
+            _dependencyManager.RegisterDependency(this, valueProvider);
         }
 
         private readonly DependencyManager _dependencyManager;
