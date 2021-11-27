@@ -60,7 +60,7 @@ namespace test.Components
         [Microsoft.JSInterop.JSInvokable]
         public void Add(Event ev)
         {
-            var message = _store.Message.Get(null);
+            var message = _store.Message.Value;
             if (string.IsNullOrEmpty(message))
             {
                 System.Console.WriteLine("Empty value");
@@ -74,13 +74,13 @@ namespace test.Components
         [Microsoft.JSInterop.JSInvokable]
         public void ToggleHide(Event ev)
         {
-            _store.ShowText.Set(!_store.ShowText.Get(null));
+            _store.ShowText.Set(!_store.ShowText.Value);
         }
 
         [Microsoft.JSInterop.JSInvokable]
         public void ToggleHide2(Event ev)
         {
-            _store.Hidden.Set(!_store.Hidden.Get(null));
+            _store.Hidden.Set(!_store.Hidden.Value);
         }
 
         [Microsoft.JSInterop.JSInvokable]

@@ -30,48 +30,54 @@ function _serializeEvent(event)
     }
 }
 
-function _createElement(tagName, id, attributes, eventHandlers) {
-    var element = document.createElement(tagName);
-    _getMapping()[id] = element;
+function _createElement(node) {
+    var element = document.createElement(node.tagName);
+    _getMapping()[node.id] = element;
 
-    if (typeof(attributes) == 'object') {
-        Object.keys(attributes).forEach(key => {
-            element.setAttribute(key, attributes[key]);
+    if (typeof(node.attributes) == 'object') {
+        Object.keys(node.attributes).forEach(key => {
+            element.setAttribute(key, node.attributes[key]);
         });
     }
 
-    if (eventHandlers?.length) {
-        eventHandlers.forEach(eventHandler => {
+    if (node.eventHandlers?.length) {
+        node.eventHandlers.forEach(eventHandler => {
             element[`on${eventHandler.event}`] = (ev) => eventHandler.componentInterop.invokeMethod(eventHandler.componentMethodName, _serializeEvent(ev), ...eventHandler.params);
         })
+    }
+
+    if (node.children?.length) {
+        node.children.forEach(child => {
+            _insert(child, element);
+        });
     }
     
     return element;
 }
-function _createText(text, id) {
-    var node = document.createTextNode(text);
+function _createText(node) {
+    var createdNode = document.createTextNode(node.text);
     var mapping = _getMapping();
-    mapping[id] = node;
+    mapping[node.id] = createdNode;
 
-    return node;
+    return createdNode;
 }
-function _createComment(content, id) {
-    var node = document.createComment(content);
+function _createComment(node) {
+    var createdNode = document.createComment(node.content);
     var mapping = _getMapping();
-    mapping[id] = node;
+    mapping[node.id] = createdNode;
 
-    return node;
+    return createdNode;
 }
 function _createNode(node) {
     if (node.text != null) {
-        return _createText(node.text, node.id);
+        return _createText(node);
     }
 
     if (node.content != null) {
-        return _createComment(node.content, node.id);
+        return _createComment(node);
     }
 
-    return _createElement(node.tagName, node.id, node.allAttributes, node.eventHandlers);
+    return _createElement(node);
 }
 function _insert(newNode, parentElement, nextNode = null) {
     const createdNode = _createNode(newNode);
@@ -135,8 +141,7 @@ function InsertNodeBefore(newNode, nextNodeId) {
 function RemoveNode(nodeId) {
     try {
         var node = _getNode(nodeId);
-
-        node.parentElement.removeChild(node);
+        node.remove();
     }
     catch (err) {
         console.error(err);

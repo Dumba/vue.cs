@@ -28,23 +28,31 @@ namespace Vue.cs.Framework.Runtime.Reactive
         }
 
         // nodes
-        public ValueTask InsertNode(Guid parentElementId, IPageNode node)
+        public async ValueTask InsertNode(string parentElementSelector, IPageItem pageItem)
         {
-            // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementId, node.Build(_dependencyManager, this), null);
+            // Master component
+            foreach (var node in pageItem.Build(_dependencyManager, this))
+            {
+                await _js.InvokeVoidAsync("InsertNode", parentElementSelector, node, null);
+            }
         }
-        public ValueTask InsertNode(string parentElementSelector, IPageNode node)
+        public async ValueTask InsertNode(Guid parentElementId, IPageItem pageItem)
         {
-            // Guid.Empty = Master component
-            return _js.InvokeVoidAsync("InsertNode", parentElementSelector, node.Build(_dependencyManager, this), null);
+            foreach (var node in pageItem.Build(_dependencyManager, this))
+            {
+                await _js.InvokeVoidAsync("InsertNode", parentElementId, node, null);
+            }
         }
-        public ValueTask InsertNodeBefore(IPageNode node, Guid insertBeforeNodeId)
+        public async ValueTask InsertNodeBefore(IPageItem pageItem, Guid insertBeforeNodeId)
         {
-            return _js.InvokeVoidAsync("InsertNodeBefore", node.Build(_dependencyManager, this), insertBeforeNodeId);
+            foreach (var node in pageItem.Build(_dependencyManager, this))
+            {
+                await _js.InvokeVoidAsync("InsertNodeBefore", node, insertBeforeNodeId);
+            }
         }
-        public ValueTask ReplaceNode(IPageNode pageItem)
+        public ValueTask ReplaceNode(INodeBuilt node)
         {
-            return _js.InvokeVoidAsync("ReplaceNode", pageItem.Id, pageItem.Build(_dependencyManager, this));
+            return _js.InvokeVoidAsync("ReplaceNode", node.Id, node);
         }
         public ValueTask RemoveNode(Guid nodeId)
         {

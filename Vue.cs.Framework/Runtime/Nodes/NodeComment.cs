@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
+using Vue.cs.Framework.Runtime.Nodes.Models;
 using Vue.cs.Framework.Runtime.Reactive;
 
 namespace Vue.cs.Framework.Runtime.Nodes
@@ -19,13 +20,10 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
         public bool IsVisible => true;
 
-        public object Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
+
+        public IEnumerable<INodeBuilt> Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
         {
-            return new
-            {
-                Id,
-                Content,
-            };
+            yield return new CommentBuilt(Id, Content);
         }
 
         public void Demolish()

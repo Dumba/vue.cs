@@ -6,21 +6,22 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 {
     public class TemplateBuilder : Builder
     {
-        public TemplateBuilder(IServiceProvider serviceProvider, BaseComponent parentComponent) : base(serviceProvider, parentComponent, "")
+        public TemplateBuilder(IServiceProvider serviceProvider, BaseComponent parentComponent, string? commentText = null)
+            : base(serviceProvider, parentComponent, "")
         {
             var startId = Guid.NewGuid();
             var endId = Guid.NewGuid();
 
-            StartNode = new NodeComment($" start template {startId} / {endId} ", startId);
-            EndNode = new NodeComment($" end template {startId} / {endId} ", endId);
+            _startNode = new NodeComment($" {commentText ?? "template"} {startId} ", startId);
+            _endNode = new NodeComment($" {commentText ?? "template"} {startId} ", endId);
         }
 
-        public NodeComment StartNode { get; set; }
-        public NodeComment EndNode { get; set; }
+        private NodeComment _startNode;
+        private NodeComment _endNode;
 
         protected override IPageItemCollection CreatePageItem()
         {
-            return new Template(StartNode, EndNode);
+            return new Template(_startNode, _endNode);
         }
     }
 }

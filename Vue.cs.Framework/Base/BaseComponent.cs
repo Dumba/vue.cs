@@ -34,14 +34,14 @@ namespace Vue.cs.Framework.Base
 
         public ValueTask Render(string parentElementSelector)
         {
+            var dependencyManager = _serviceProvider.Get<DependencyManager>();
             var jsManipulator = _serviceProvider.Get<JsManipulator>();
             
-            var builder = new TemplateBuilder(_serviceProvider, this);
+            var builder = new TemplateBuilder(_serviceProvider, this, $"component {GetType().Name}");
             Setup(builder);
 
-            return builder
-                .Build()
-                .Render(jsManipulator, parentElementSelector);
+            var pageItem = builder.Build();
+            return jsManipulator.InsertNode(parentElementSelector, pageItem);
         }
 
         public abstract void Setup(Builder builder, IEnumerable<IPageItem>? childNodes = null);

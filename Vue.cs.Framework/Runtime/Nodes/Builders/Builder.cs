@@ -6,7 +6,6 @@ using Vue.cs.Framework.Runtime.Nodes.Interfaces;
 using Vue.cs.Framework.Runtime.Nodes.Models;
 using Vue.cs.Framework.Runtime.Reactive.Data;
 using Vue.cs.Framework.Runtime.Reactive.Interfaces;
-using Vue.cs.Framework.Runtime.Reactive.PageItems;
 
 namespace Vue.cs.Framework.Runtime.Nodes.Builders
 {
@@ -107,22 +106,11 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
             var helperBuilder = new TemplateBuilder(_serviceProvider, component);
             if (setupChild is not null)
                 setupChild(helperBuilder);
-            builder.GetNodeData(helperBuilder);
+            builder._getNodeData(helperBuilder);
 
             component.Setup(builder, helperBuilder._children);
 
             _addChild(builder.Build());
-
-            return this;
-        }
-        public Builder AddChild(string tagName, Action<Builder> setupChild, out IPageItem child)
-        {
-            var childBuilder = new Builder(_serviceProvider, _parentComponent, tagName);
-            if (setupChild != null)
-                setupChild(childBuilder);
-
-            child = childBuilder.Build();
-            _addChild(child);
 
             return this;
         }
@@ -133,9 +121,11 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
             foreach (var item in collection)
             {
-                templateBuilder.AddChild(tagName, setupChild is not null
-                    ? builder => setupChild(builder, item)
-                    : builder => { });
+                templateBuilder.AddChild(
+                    tagName,
+                    setupChild is not null
+                        ? builder => setupChild(builder, item)
+                        : null);
             }
 
             _addChild(templateBuilder.Build());
@@ -145,12 +135,9 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
 
         public Builder AddChildren<TItem>(ReactiveCollection<TItem> collection, string tagName, Action<Builder, TItem>? setupChild = null)
         {
-            var reactivePageMultiItem = _serviceProvider.Get<ReactivePageMultiItem<TItem>.Builder>()
-                .Build(_parentComponent, tagName, setupChild);
+            var nodeCollection = new NodeCollection<TItem>(collection, i => _createChild(i, tagName, setupChild));
 
-            var collectionBuilder = reactivePageMultiItem.Init(collection);
-
-            _addChild(collectionBuilder.Build());
+            _addChild(nodeCollection);
 
             return this;
         }
@@ -159,9 +146,18 @@ namespace Vue.cs.Framework.Runtime.Nodes.Builders
         {
             _children.Add(child);
         }
+
+        private IPageItem _createChild<TItem>(TItem item, string tagName, Action<Builder, TItem>? setupChild)
+        {
+            var builder = new Builder(_serviceProvider, _parentComponent, tagName);
+            if (setupChild is not null)
+                setupChild(builder, item);
+            var pageItem = builder.Build();
+            return pageItem;
+        }
         #endregion
 
-        protected void GetNodeData(Builder builder)
+        private void _getNodeData(Builder builder)
         {
             // class
             _classes.AddRange(builder._classes);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Vue.cs.Framework.Runtime.Nodes.Interfaces;
+using Vue.cs.Framework.Runtime.Nodes.Models;
 using Vue.cs.Framework.Runtime.Reactive;
 using Vue.cs.Framework.Runtime.Reactive.Interfaces;
 
@@ -31,7 +32,7 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public IEnumerable<IPageNode> Nodes { get { yield return this; } }
         public bool IsVisible => true;
 
-        public object Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
+        public IEnumerable<INodeBuilt> Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
         {
             _dependencyManager = dependencyManager;
             _jsManipulator = jsManipulator;
@@ -39,12 +40,9 @@ namespace Vue.cs.Framework.Runtime.Nodes
             if (_reactiveText is not null)
                 _dependencyManager.RegisterDependency(this, _reactiveText);
 
-            return new
-            {
-                Id,
-                Text,
-            };
+            yield return new TextBuilt(Id, Text);
         }
+
         public void Demolish()
         {
             if (_reactiveText is not null)

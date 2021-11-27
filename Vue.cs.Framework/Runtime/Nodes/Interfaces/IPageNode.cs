@@ -1,5 +1,4 @@
 using System;
-using Vue.cs.Framework.Runtime.Reactive;
 
 namespace Vue.cs.Framework.Runtime.Nodes.Interfaces
 {
@@ -7,8 +6,5 @@ namespace Vue.cs.Framework.Runtime.Nodes.Interfaces
     {
         Guid Id { get; }
         bool IsVisible { get; }
-        
-        object Build(DependencyManager dependencyManager, JsManipulator jsManipulator);
-        void Demolish();
     }
 }

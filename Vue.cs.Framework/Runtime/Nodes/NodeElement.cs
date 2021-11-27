@@ -9,7 +9,7 @@ using Vue.cs.Framework.Runtime.Reactive.Interfaces;
 
 namespace Vue.cs.Framework.Runtime.Nodes
 {
-    public class NodeElement : IPageNode, INodeParent, IPageItemCollection, IReactiveConsumer<bool>
+    public class NodeElement : IPageNode, IPageItemCollection, IReactiveConsumer<bool>
     {
         public NodeElement(string tagName, Guid? id = null)
         {
@@ -38,11 +38,22 @@ namespace Vue.cs.Framework.Runtime.Nodes
         public List<IPageItem> InnerNodes { get => Children; set => Children = value; }
         public bool IsVisible => Condition?.Value ?? true;
 
-        public object Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
+        public IEnumerable<INodeBuilt> Build(DependencyManager dependencyManager, JsManipulator jsManipulator)
         {
             _dependencyManager = dependencyManager;
             _jsManipulator = jsManipulator;
 
+            if (Condition is not null)
+            {
+                _dependencyManager.RegisterDependency(this, Condition);
+                if (!Condition.Value)
+                    return new NodeComment(id: Id).Build(_dependencyManager, _jsManipulator);
+            }
+            
+            var childrenBuilt = Children
+                .SelectMany(ch => ch.Build(dependencyManager, jsManipulator))
+                .ToArray();
+                
             foreach (var attribute in Attributes)
             {
                 attribute.Build(dependencyManager, jsManipulator, Id);
@@ -54,39 +65,31 @@ namespace Vue.cs.Framework.Runtime.Nodes
             // if (Styles.Any())
             //     result.Add("style", string.Join("", Styles.Select(pair => $"{pair.Key}:{pair.Value};")));
 
-            return new
-            {
-                Id,
-                TagName,
-                Attributes = allAttributes,
-                EventHandlers,
-            };
+            return Enumerable.Repeat(new ElementBuilt(Id, TagName, allAttributes, EventHandlers, childrenBuilt), 1);
         }
 
         public void Demolish()
         {
+            if (Condition is not null)
+                _dependencyManager?.UnregisterDependency(this, Condition);
+
+            foreach (var attribute in Attributes)
+            {
+                attribute.Demolish();
+            }
+
+            _dependencyManager = null;
+            _jsManipulator = null;
         }
 
         public async ValueTask Changed(bool oldValue, bool newValue)
         {
-            if (_jsManipulator is null)
+            if (_jsManipulator is null || _dependencyManager is null)
                 return;
 
-            // show
-            if (newValue)
-            {
-                await _jsManipulator.ReplaceNode(this);
-
-                foreach (var child in Children)
-                {
-                    await child.Render(_jsManipulator, Id);
-                }
-            }
-            // hide
-            else
-            {
-                await _jsManipulator.ReplaceNode(new NodeComment(id: Id));
-            }
+            // build always returns single node
+            var newNodeBuilt = this.Build(_dependencyManager, _jsManipulator).First();
+            await _jsManipulator.ReplaceNode(newNodeBuilt);
         }
     }
 }
