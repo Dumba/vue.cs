@@ -11,7 +11,7 @@ namespace Vue.cs.Generator.DomElements
 
         public string Content { get; }
 
-        public void Generate(StringBuilder sb)
+        public void Generate(StringBuilder sb, int intendation)
         {
             sb.Append(Content);
         }

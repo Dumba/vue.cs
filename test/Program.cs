@@ -8,7 +8,7 @@ namespace test
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
@@ -22,7 +22,7 @@ namespace test
             builder.Services.AddScoped<Components.Master>();
             builder.Services.AddScoped<Components.Menu>();
 
-            await builder.Build().RunAsync();
+            return builder.Build().RunAsync();
         }
     }
 }

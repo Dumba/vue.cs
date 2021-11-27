@@ -1,0 +1,34 @@
+<template>
+    <menu class="main">
+        <li @click={MoveTo("home")}>Home</li>
+        <li @click={MoveTo("about")}>About</li>
+    </menu>
+    <div v-if={_store.Hidden}>Hidden menu</div>
+</template>
+
+<script>
+using System;
+using System.Collections.Generic;
+using Vue.cs.Framework.Base;
+using Vue.cs.Framework.Runtime.Nodes.Builders;
+using Vue.cs.Framework.Runtime.Nodes.Interfaces;
+
+namespace test.Components
+{
+    public class Menu : BaseComponent
+    {
+        public Menu(IServiceProvider serviceProvider, Store.Store store) : base(serviceProvider)
+        {
+            _store = store;
+        }
+
+        private readonly Store.Store _store;
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void MoveTo(Event ev, string path)
+        {
+            System.Console.WriteLine($"Moved to {path}");
+        }
+    }
+}
+</script>

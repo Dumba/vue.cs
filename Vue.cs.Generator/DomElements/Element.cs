@@ -41,7 +41,7 @@ namespace Vue.cs.Generator.DomElements
             return $"{TagName}{idIdentify}{classIndentify}";
         }
 
-        public void Generate(StringBuilder sb)
+        public void Generate(StringBuilder sb, int intendation)
         {
             // node or collection
             if (CodeAttributes.TryGetValue("v-for", out var forDefinition))
@@ -50,30 +50,30 @@ namespace Vue.cs.Generator.DomElements
                 var param = splitted[0];
                 var collectionName = splitted[1];
 
-                sb.AppendLine($".AddChildren({collectionName}, \"{TagName}\", (b, {param}) => b");
+                sb.Append(' ', intendation).AppendLine($".AddChildren({collectionName}, \"{TagName}\", (b, {param}) => b");
             }
             else if (char.IsUpper(TagName[0]))
-                sb.AppendLine($".AddChild<{TagName}>(b => b");
+                sb.Append(' ', intendation).AppendLine($".AddChild<{TagName}>(b => b");
             else
-                sb.AppendLine($".AddChild(\"{TagName}\", b => b");
+                sb.Append(' ', intendation).AppendLine($".AddChild(\"{TagName}\", b => b");
 
             // classes
             foreach (var className in Classes)
             {
-                sb.AppendLine($".AddClass(\"{className}\")");
+                sb.Append(' ', intendation + 4).AppendLine($".AddClass(\"{className}\")");
             }
 
             // attributes
             foreach (var attribute in CustomAttributes)
             {
-                sb.AppendLine($".AddAttribute(\"{attribute.Key}\", \"{attribute.Value}\")");
+                sb.Append(' ', intendation + 4).AppendLine($".AddAttribute(\"{attribute.Key}\", \"{attribute.Value}\")");
             }
 
             // conditions, events & reactiveValue
             foreach (var attribute in CodeAttributes)
             {
                 if (attribute.Key == "v-if")
-                    sb.AppendLine($".SetCondition({attribute.Value})");
+                    sb.Append(' ', intendation + 4).AppendLine($".SetCondition({attribute.Value})");
                 else if (attribute.Key == "v-for")
                 {
                     // ignore, already done
@@ -89,19 +89,19 @@ namespace Vue.cs.Generator.DomElements
                         ? $", {attribute.Value.Cut(i + 1, -1)}"
                         : "";
 
-                    sb.AppendLine($".AddEventListener(\"{attribute.Key.Substring(1)}\", \"{methodName}\"{methodArgs})");
+                    sb.Append(' ', intendation + 4).AppendLine($".AddEventListener(\"{attribute.Key.Substring(1)}\", \"{methodName}\"{methodArgs})");
                 }
                 else
-                    sb.AppendLine($".AddAttribute(\"{attribute.Key}\", {attribute.Value})");
+                    sb.Append(' ', intendation + 4).AppendLine($".AddAttribute(\"{attribute.Key}\", {attribute.Value})");
             }
 
             // children
             foreach (var child in Children)
             {
-                child.Generate(sb);
+                child.Generate(sb, intendation + 4);
             }
 
-            sb.AppendLine(")");
+            sb.Append(' ', intendation).AppendLine(")");
         }
     }
 }

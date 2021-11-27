@@ -58,7 +58,7 @@ namespace Vue.cs.Generator.Workers
             
             foreach (var node in nodes)
             {
-                node.Generate(sb);
+                node.Generate(sb, 4);
             }
             
             sb.AppendLine(";");

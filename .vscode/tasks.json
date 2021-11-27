@@ -3,6 +3,18 @@
     "tasks": [
         {
             "label": "build",
+            "type": "process",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "generate",
+                "dotnet-build"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "dotnet-build",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -12,6 +24,15 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "generate",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "${workspaceFolder}/Vue.cs.Generator/bin/Debug/net6.0/Vue.cs.Generator.dll",
+                "${workspaceFolder}/test"
+            ]
         },
         {
             "label": "publish",

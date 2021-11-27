@@ -1,0 +1,74 @@
+<template>
+    <Menu v-if={_store.ShowText} class="bleee"/>
+    hello
+    <input class="ccc" value={_store.Message} @keyup={SetMessage} />
+    <button @click={Add}>
+        {{ _store.Label }} Click? :-)
+    </button>
+    <button @click={ToggleHide}>{{ _store.ShowHideLabel }}</button>
+    <button @click={ToggleHide2}>ShowHideLabel - 2</button>
+    <button v-for={i in _store.List} @click={Remove(i)}>{{ i }}</button>
+    <div v-if={_store.ShowText}>Vidíš mě?</div>
+    <div v-if={_store.Hidden}>next hidden</div>
+    <div>Poslední</div>
+</template>
+
+<script>
+using System;
+using System.Collections.Generic;
+using Vue.cs.Framework.Base;
+using Vue.cs.Framework.Runtime.Nodes.Builders;
+using Vue.cs.Framework.Runtime.Nodes.Interfaces;
+
+namespace test.Components
+{
+    public class Master : BaseComponent
+    {
+        public Master(IServiceProvider serviceProvider, Store.Store store) : base(serviceProvider)
+        {
+            _store = store;
+        }
+
+        private readonly Store.Store _store;
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void SetMessage(Event ev)
+        {
+            var message = ev.Value.GetString();
+            _store.Message.Set(message!);
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void Add(Event ev)
+        {
+            var message = _store.Message.Value;
+            if (string.IsNullOrEmpty(message))
+            {
+                System.Console.WriteLine("Empty value");
+                return;
+            }
+
+            _store.List.Add(message);
+            _store.Message.Set("");
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void ToggleHide(Event ev)
+        {
+            _store.ShowText.Set(!_store.ShowText.Value);
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void ToggleHide2(Event ev)
+        {
+            _store.Hidden.Set(!_store.Hidden.Value);
+        }
+
+        [Microsoft.JSInterop.JSInvokable]
+        public void Remove(Event ev, string item)
+        {
+            _store.List.Remove(item);
+        }
+    }
+}
+</script>
